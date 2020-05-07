@@ -17,6 +17,12 @@
 - `Tools` and `Users` can have reviews indicating their overall quality, punctuality, and function. This provides feedback to `Users` on both sides of the transaction as to the state of the tool or the character of the individual
 - `Chat rooms` are designated geographically and are the means by which people can talk as well as initiate a formal request to borrow tools.
 
+## Tools Used
+
+- `Google` for Oauth
+- `MongoDB` for data retention
+
+
 ### Domain Model
 
 ![domain model](assets/domain_modelV1.JPG)

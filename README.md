@@ -21,6 +21,7 @@
 
 - `Google` for Oauth
 - `MongoDB` for data retention
+- [`Trello`](https://trello.com/b/57y9roix/team-401d35) for task tracking 
 
 
 ### Domain Model

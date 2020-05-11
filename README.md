@@ -28,8 +28,22 @@
 
 ![domain model](assets/domain_modelV1.JPG)
 
-
 ### .env file setup
 * Create your own .env file in root folder
 * PORT=3000
 * MONGODB_URL=mongodb://localhost/hey-neighbor
+
+### Generic Model 
+This generic model supports basic mongoDB CRUD operations. This is for creating dynamic model later.
+* `create(record)`: create a record in the DB and return it
+* `get(_id)`: return a record by _id from the DB; if _id is not given, it will return all the records from the DB
+* `update(_id, record)`: update a record in the DB by _id and return updated record
+* `delete(_id)`: delete a record in the DB by _id and return deleted record
+
+### Schemas
+
+### API Routes
+
+### Tests
+* generic model: Run Command `__tests__/model.test.js --verbose --coverage`
+

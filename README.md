@@ -27,3 +27,9 @@
 ### Domain Model
 
 ![domain model](assets/domain_modelV1.JPG)
+
+
+### .env file setup
+* Create your own .env file in root folder
+* PORT=3000
+* MONGODB_URL=mongodb://localhost/hey-neighbor

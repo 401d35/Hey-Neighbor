@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const ITEM = ('../item-schema.js');
+const ITEM = require ('../item-schema.js');
 
-router.get(ITEMid, getITEM);
-router.get(ITEM, getITEM);
-router.post(ITEM, postITEM);
-router.put(ITEMid, putITEM)
-router.delete(ITEMid, deleteITEM);
+router.get('/item/:ITEMid', getITEM);
+router.get('/item', getITEM);
+router.post('/item', postITEM);
+router.put('/item/:ITEMid', putITEM)
+router.delete('/item/:ITEMid', deleteITEM);
 
 //get item with matching id
 function getITEM( req, res, next) {

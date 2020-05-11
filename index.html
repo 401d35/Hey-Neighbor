@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="process.env.OAUTH_CLIENT_ID.apps.googleusercontent.com">
+    <title>Hey Neighbor!</title>
+</head>
+
+<body>
+    <div class="g-signin2" id="my-signin2"></div>
+    <script>
+        function onSuccess(googleUser) {
+            console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+        }
+
+        function onFailure(error) {
+            console.log(error);
+        }
+
+        function renderButton() {
+            gapi.signin2.render('my-signin2', {
+                'scope': 'profile email',
+                'width': 240,
+                'height': 50,
+                'longtitle': true,
+                'theme': 'dark',
+                'onsuccess': onSuccess,
+                'onfailure': onFailure
+            });
+        }
+    </script>
+
+<a href="#" onclick="signOut();">Sign out</a>
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+</body>
+
+</html>
+
+<
+button id = "sign-in-or-out-button"
+style = "margin-left: 25px" > Sign In / Authorize < /button> <
+    button id = "revoke-access-button"
+style = "display: none; margin-left: 25px" > Revoke access < /button>
+
+    <
+    div id = "auth-status"
+style = "display: inline; padding-left: 25px" > < /div><hr>
+
+    <
+    script src = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" > < /script> <
+    script async defer src = "https://apis.google.com/js/api.js"
+onload = "this.onload=function(){};handleClientLoad()"
+onreadystatechange = "if (this.readyState === 'complete') this.onload()" >
+    <
+    /script>

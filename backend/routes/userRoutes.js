@@ -12,8 +12,9 @@ userRoutes.get('/user', async function(req, res){
 });
 
 userRoutes.get('/user/:userName', async function (req,res) {
-  let dbUser = USER.find({'userName':userName});
+  let dbUser = USER.find({'userName':req.body.userName,});
   if(dbUser.length > 0){
+    delete dbUser[0].password;
     res.status(200).json(dbUser[0]);
   }
 });
@@ -27,8 +28,7 @@ userRoutes.post('/user', async function (req,res){
 
 userRoutes.put('/user', async function(req,res){
   let userName = req.body.userName;
-  let user = new USER(req.body);
-  let dbUser = Model.find({'userName':userName,});
+  let dbUser = USER.find({'userName':userName,});
   let updateFields = {};
 
   if(bcrypt.compare(req.body.password, dbUser.password)){

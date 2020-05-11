@@ -26,7 +26,7 @@
 
 ### Domain Model
 
-![domain model](assets/domain_modelV1.JPG)
+![domain model](assets/Domain-model.jpeg)
 
 
 ### .env file setup

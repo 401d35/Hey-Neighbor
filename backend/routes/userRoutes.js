@@ -6,6 +6,10 @@ const userRoutes = express.Router();
 const USER = require('../schemas/user-schema.js');
 const bcrypt = require('bcryptjs');
 
+userRoutes.get('/oauth', oauth, (req, res) => {
+  res.status(200).send(req.token);
+});
+
 userRoutes.get('/user', async function(req, res){
   let userList = USER.find({});
   res.status(200).json(userList);

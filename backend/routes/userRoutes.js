@@ -1,46 +1,44 @@
 'use strict';
 
 const express = require('express');
-const SECRET = process.env.SECRET;
 const userRoutes = express.Router();
-const USER = require('../schemas/user-schema.js');
-const bcrypt = require('bcryptjs');
+const userSchema = require('../schemas/user-schema.js');
+const itemSchema = require('../schemas/item-schema.js');
+const Model = require('../schemas/model.js');
 
 userRoutes.get('/user', async function(req, res){
-  let userList = USER.find({});
+  let userModel = new Model(userSchema);
+  let userList = await userModel.get();
   res.status(200).json(userList);
 });
 
-userRoutes.get('/user/:userName', async function (req,res) {
-  let dbUser = USER.find({'userName':req.body.userName,});
-  if(dbUser.length > 0){
-    delete dbUser[0].password;
-    res.status(200).json(dbUser[0]);
-  }
+userRoutes.get('/user/:id', async function (req,res) {
+  let userModel = new Model(userSchema);
+  userModel.get(req.params.id)
+    .then(dbUser => {
+      delete dbUser.password;
+      res.status(200).jsoon(dbUser);
+    })
+    .catch(e => {
+      res.status(400).json(e);
+    });
 });
 
 userRoutes.post('/user', async function (req,res){
-
-  let user = new USER(req.body);
-  let stored = await user.save();
+  let userModel = new Model(userSchema);
+  let stored = await userModel.create(req.body);
   res.status(201).json(stored);
 });
 
-userRoutes.put('/user', async function(req,res){
-  let userName = req.body.userName;
-  let dbUser = USER.find({'userName':userName,});
-  let updateFields = {};
+userRoutes.put('/user/:id', async function(req,res){
+  let userModel = new Modle(userSchema);
 
-  if(bcrypt.compare(req.body.password, dbUser.password)){
-    Object.keys(req.body).forEach( field => {
-      updateFields[field] = req.body.field;
-    });
-    delete updateFields.userName;
-    delete updateFields.password;
-    let options = {'new': true,};
-    let updatedUser = await USER.findByIdAndUpdate(dbUser._id, updateFields, options);
-    res.status(201).json(updatedUser);
-  }
+  let updateVals = req.body;
+  delete updateVals.password;
+
+  let updatedUser = await userModel.update(id, updateVals);
+
+  res.status(200).json(updatedUser);
 
 
 });
@@ -51,6 +49,9 @@ userRoutes.put('/user', async function(req,res){
 // anything still loaned out should stay so.
 // on 'check-in' we can do a quick look to see if the owner is still active
 // and if they are not, inactivate the item
-userRoutes.delete('/user/:userName', async function(req,res){
-
+userRoutes.delete('/user/:id', async function(req,res){
+  let userModel = new Model(userSchema);
+  userModel.update(req.params.id, {'active':false,});
+  let itemModel = new Model(itemSchema);
+  
 });

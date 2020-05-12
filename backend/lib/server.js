@@ -7,14 +7,14 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
+dotenv.config();
+const app = express();
 
 // local modules
 const userRoutes = require('../routes/userRoutes.js');
 const reviewRoutes = require('../routes/reviewRoutes.js');
 
 
-const app = express();
-dotenv.config();
 
 app.use(express.json());
 app.use(cors());

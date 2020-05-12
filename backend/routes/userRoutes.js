@@ -18,8 +18,21 @@ userRoutes.put('/user/:id', updateUser);
 // on 'check-in' we can do a quick look to see if the owner is still active
 // and if they are not, inactivate the item
 userRoutes.delete('/user/:id', deactivateUser);
+userRoutes.get('/user/active', getAllActiveUsers);
+
+userRoutes.get('/test', async(req,res)=>{
+  res.json({message: 'pass!'});
+});
 
 
+async function getAllActiveUsers(req, res){
+  let userModel = new Model(userSchema);
+  let userList = await userModel.getActive();
+  userList.forEach( user => {
+    delete user.password;
+  });
+  res.status(200).json(userList);
+}
 
 async function getAllUsers(req, res){
   let userModel = new Model(userSchema);
@@ -44,10 +57,14 @@ async function getUserById(req,res){
 
 async function createUser(req, res){
   let userModel = new Model(userSchema);
-  let stored = await userModel.create(req.body);
-  stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
-  delete stored.password;
-  res.status(201).json(stored);
+  try{
+    let stored = await userModel.create(req.body);
+    stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
+    delete stored.password;
+    res.status(201).json(stored);
+  }catch (e){
+    res.status(400).json(e);
+  }
 }
 
 async function updateUser(req,res){

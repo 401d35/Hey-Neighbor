@@ -26,10 +26,13 @@
 
 ### Domain Model
 
-![domain model](assets/Domain-model.jpeg)
+![domain model UML](assets/Domain-model.jpeg)
 
 
 ### .env file setup
 * Create your own .env file in root folder
 * PORT=3000
 * MONGODB_URL=mongodb://localhost/hey-neighbor
+* OAUTH_CLIENT_ID=444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com
+* OAUTH_SECRET_ID=M_xA5KS1W5S4B09Zdr7YmrVb
+* GOOGLE_APPLICATION_CREDENTIALS=../backend/Google Aouth/auth/client_secret_444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com.json

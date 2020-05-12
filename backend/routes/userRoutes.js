@@ -8,6 +8,18 @@ const Model = require('../schemas/model.js');
 
 // return a list of all users in the database
 userRoutes.get('/user', getAllUsers );
+// return only the single user, no password
+userRoutes.get('/user/:id', getUserById);
+userRoutes.post('/user', createUser);
+userRoutes.put('/user/:id', updateUser);
+// this one needs discussion. Probably shouldn't 'delete' but inactivate
+// then inactivate any items that are not loaned out
+// anything still loaned out should stay so.
+// on 'check-in' we can do a quick look to see if the owner is still active
+// and if they are not, inactivate the item
+userRoutes.delete('/user/:id', deactivateUser);
+
+
 
 async function getAllUsers(req, res){
   let userModel = new Model(userSchema);
@@ -17,9 +29,6 @@ async function getAllUsers(req, res){
   });
   res.status(200).json(userList);
 }
-
-// return only the single user, no password 
-userRoutes.get('/user/:id', getUserById);
 
 async function getUserById(req,res){
   console.log(req.params.id);
@@ -33,8 +42,6 @@ async function getUserById(req,res){
     });
 }
 
-userRoutes.post('/user', createUser);
-
 async function createUser(req, res){
   let userModel = new Model(userSchema);
   let stored = await userModel.create(req.body);
@@ -42,8 +49,6 @@ async function createUser(req, res){
   delete stored.password;
   res.status(201).json(stored);
 }
-
-userRoutes.put('/user/:id', updateUser);
 
 async function updateUser(req,res){
   let userModel = new Model(userSchema);
@@ -54,17 +59,12 @@ async function updateUser(req,res){
   res.status(200).json(updatedUser);
 }
 
-// this one needs discussion. Probably shouldn't 'delete' but inactivate
-// then inactivate any items that are not loaned out
-// anything still loaned out should stay so.
-// on 'check-in' we can do a quick look to see if the owner is still active
-// and if they are not, inactivate the item
-userRoutes.delete('/user/:id', deactivateUser);
-
 async function deactivateUser(req,res){
   let userModel = new Model(userSchema);
   userModel.update(req.params.id, {'active':false,});
   let itemModel = new Model(itemSchema);
+  itemModel.find({'_custodyId':req.params.id,'owner':req.params.id}).populate({path:'_owner', select:'_id'})
+    .populate({path:'_custodyId', select:'_id',});
 }
 
 module.exports = userRoutes;

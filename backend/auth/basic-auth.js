@@ -1,7 +1,8 @@
 'use strict'; 
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const Users = require('../schemas/user-schema');
+const base64 = require('base64')
 
 module.exports = async function( req, res, next) {
     if(!req,headers.authorization) {
@@ -9,7 +10,11 @@ module.exports = async function( req, res, next) {
     }
 }
 
-const validUser = await bcrypt.compare(pass,returns.password);
+let basicAuth = req.headers.authorization.split(' ').pop();
+let [user, authorize] = base64.decode(basicAuth).split(':');
+let returns = await Users.findOne({username:user,});
+
+const validUser = await bcrypt.compare(authorize,returns.password);
 
 if(validUser) {
     let sameUser = new Users(returns);

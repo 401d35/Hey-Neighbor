@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 
 // local modules
 const userRoutes = require('../routes/userRoutes.js');
+const reviewRoutes = require('../routes/reviewRoutes.js');
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(userRoutes);
+app.use(reviewRoutes);
 
 module.exports = {
   server: app,

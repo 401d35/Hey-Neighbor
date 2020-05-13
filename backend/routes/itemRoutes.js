@@ -2,40 +2,46 @@
 
 const express = require('express');
 const itemRoutes = express.Router();
-const itemSchema = require ('../item-schema.js');
-const Model = require('../schemas/model.js');
 
-router.get('/item/:ITEMid', getITEM);
-router.get('/item', getITEM);
-router.post('/item', postITEM);
-router.put('/item/:ITEMid', putITEM);
-router.delete('/item/:ITEMid', deleteITEM);
+const ITEM = require ('../schemas/item-schema.js');
 
-//get item with matching id
-function getITEM( req, res, next) {
+itemRoutes.get('/item/:ITEMid', getITEM);
+itemRoutes.get('/item', getITEM);
+itemRoutes.post('/item', postITEM);
+itemRoutes.put('/item/:ITEMid', putITEM);
+itemRoutes.delete('/item/:ITEMid', deleteITEM);
+
+// get item or itemS
+function getITEM( req, res) {
   ITEM.get(req.params.ITEMid)
     .then(data => {
       res.status(200).json(data);
     })
-    .catch(next);
+    .catch(e => {
+      res.status(401).json(e);
+    });
 }
 
 //creates a new item 
-function postITEM( req, res, next){
+function postITEM( req, res){
   ITEM.create(req.body)
     .then(data => {
       res.status(201).json(data);
     })
-    .catch(next);
+    .catch(e => {
+      res.status(401).json(e);
+    });
 }
 
 //update item with the matching id
-function putITEM( req, res, next) {
+function putITEM( req, res) {
   ITEM.update(req.params.ITEMid, req.body)
     .then(data => {
       res.status(201).json(data);
     })
-    .catch(next);
+    .catch(e => {
+      res.status(401).json(e);
+    });
 }
 
 //delete a item with the matching item id 
@@ -46,4 +52,4 @@ function deleteITEM( req, res) {
     });
 }
 
-module.exports = router;
+module.exports = itemRoutes;

@@ -25,7 +25,7 @@ reviewRoutes.get('/review/:subject_id/:type', async(req,res) => {
   // let reviewModel = new Model(reviewSchema);
   let query = {$and:[{reviewSubject: req.params.subject_id, reviewType: req.params.type,}],};
   let results = await reviewSchema.find(query);
-  console.log('***', results);
+  // console.log('***', results);
   res.status(200).json(results);
 });
 
@@ -35,7 +35,7 @@ reviewRoutes.post('/review', async (req,res) =>{
     let stored = await reviewModel.create(req.body);
     res.status(201).json(stored);
   }catch(e){
-    console.log(e);
+    // console.log(e);
     res.status(400).json(e);
   }
 });
@@ -47,7 +47,7 @@ reviewRoutes.put('/review/:id', async (req,res) => {
       res.status(201).json(results);
     })
     .catch(e =>{
-      console.log('malformed review put request');
+      // console.log('malformed review put request');
       res.status(400).json(e);
     });
 });

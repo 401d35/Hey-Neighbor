@@ -1,8 +1,9 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
-const ITEM = require ('../item-schema.js');
+const itemRoutes = express.Router();
+const itemSchema = require ('../item-schema.js');
+const Model = require('../schemas/model.js');
 
 router.get('/item/:ITEMid', getITEM);
 router.get('/item', getITEM);

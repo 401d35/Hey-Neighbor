@@ -3,10 +3,14 @@
 
 const express = require('express');
 const userRoutes = express.Router();
+
+const userSchema = require('../schemas/user-schema.js');
+const Model = require('../schemas/model.js');
 const users = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
 const Model = require('../schemas/model.js'); // can get rid of this later
+
 
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
@@ -22,10 +26,17 @@ userRoutes.put('/user/:id', updateUser);
 // on 'check-in' we can do a quick look to see if the owner is still active
 // and if they are not, inactivate the item
 userRoutes.delete('/user/:id', deactivateUser);
+userRoutes.get('/user/active', getAllActiveUsers);
+
+
+userRoutes.get('/test', async(req,res)=>{
+  res.json({message: 'pass!',});
+});
 
 function handleSignin(req, res) {
   res.status(200).send(req.token);
 }
+
 
 function handleSignup(req, res) {
   users.signup(req.body)
@@ -39,8 +50,20 @@ function handleSignup(req, res) {
     });
 }
 
+
+async function getAllActiveUsers(req, res){
+  let userModel = new Model(userSchema);
+  let userList = await userModel.getActive();
+  userList.forEach( user => {
+    delete user.password;
+  });
+  res.status(200).json(userList);
+}
+
+
 async function getAllUsers(req, res) {
   const userList = await users.get();
+
   userList.forEach( user => {
     delete user.password;
   });
@@ -52,8 +75,8 @@ async function getUserById(req, res) {
     .then(dbUser => {
       res.status(200).json(dbUser[0]);
     })
-    .catch(e => {
-      res.status(400).json(e);
+    .catch(() => {
+      res.status(400).json('No matching user found');
     });
 }
 

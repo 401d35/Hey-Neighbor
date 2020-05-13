@@ -14,9 +14,13 @@ const reviewSchema = new Schema({
   reviewSubject: {type:String, required:true,},
   reviewWriter: {type: String, required:true,},
   reviewType: {type: String, required: true,},
-  score:{ type: Number, required: true,},
-  date: {type: Date, required:true,},
+  score:{
+    type: Number,
+    required: true,
+    min:1,
+    max:5,},
+  date: {type: Date, default:Date.now,},
   text: {type:String, required:true,},
 });
 
-mongoose.model('review', reviewSchema);
+module.exports = mongoose.model('review', reviewSchema);

@@ -15,6 +15,11 @@ class Model {
     return newRecord.save();
   }
 
+  getActive(){
+    let query = {active:true,};
+    return this.schema.find(query);
+  }
+
   // Read
   get(_id) {
     const queryObject = _id ? { _id, } : {};

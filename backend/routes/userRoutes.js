@@ -1,11 +1,15 @@
+/* eslint-disable new-cap */
 'use strict';
 
 const express = require('express');
 const userRoutes = express.Router();
-const userSchema = require('../schemas/user-schema.js');
-const itemSchema = require('../schemas/item-schema.js');
-const Model = require('../schemas/model.js');
+const users = require('../schemas/user-model.js');
+const basicAuth = require('../auth/basic-auth.js');
+const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
+const Model = require('../schemas/model.js'); // can get rid of this later
 
+userRoutes.post('/signup', handleSignup); // sign up route
+userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
 userRoutes.get('/user', getAllUsers );
 // return only the single user, no password
@@ -19,21 +23,32 @@ userRoutes.put('/user/:id', updateUser);
 // and if they are not, inactivate the item
 userRoutes.delete('/user/:id', deactivateUser);
 
+function handleSignin(req, res) {
+  res.status(200).send(req.token);
+}
 
+function handleSignup(req, res) {
+  users.signup(req.body)
+    .then(created => {
+      // delete password property
+      delete created.password;
+      res.status(201).json(created);
+    })
+    .catch(error => {
+      res.status(400).send(error);
+    });
+}
 
-async function getAllUsers(req, res){
-  let userModel = new Model(userSchema);
-  let userList = await userModel.get();
+async function getAllUsers(req, res) {
+  const userList = await users.get();
   userList.forEach( user => {
     delete user.password;
   });
   res.status(200).json(userList);
 }
 
-async function getUserById(req,res){
-  console.log(req.params.id);
-  let userModel = new Model(userSchema);
-  userModel.get(req.params.id)
+async function getUserById(req, res) {
+  users.get(req.params.id)
     .then(dbUser => {
       res.status(200).json(dbUser[0]);
     })
@@ -43,28 +58,25 @@ async function getUserById(req,res){
 }
 
 async function createUser(req, res){
-  let userModel = new Model(userSchema);
-  let stored = await userModel.create(req.body);
+  let stored = await users.create(req.body);
   stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
   delete stored.password;
   res.status(201).json(stored);
 }
 
-async function updateUser(req,res){
-  let userModel = new Model(userSchema);
-  let updateVals = req.body;
-  console.log(typeof updateVals);
-  delete updateVals.password; // prevents update of password. this needs a different route to handle something that dangerous
-  let updatedUser = await userModel.update(req.params.id, updateVals);
+async function updateUser(req, res) {
+  // req.body will never contain password property
+  const updatedUser = await users.update(req.params.id, req.body);
   res.status(200).json(updatedUser);
 }
 
-async function deactivateUser(req,res){
-  let userModel = new Model(userSchema);
-  userModel.update(req.params.id, {'active':false,});
+async function deactivateUser(req, res) {
+  users.update(req.params.id, {'active':false,});
   let itemModel = new Model(itemSchema);
   itemModel.find({'_custodyId':req.params.id,'owner':req.params.id}).populate({path:'_owner', select:'_id'})
     .populate({path:'_custodyId', select:'_id',});
+  // send some message back
+  res.send('Your account is successfully deactivated!');
 }
 
 module.exports = userRoutes;

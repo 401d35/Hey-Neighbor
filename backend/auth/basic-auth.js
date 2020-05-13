@@ -1,27 +1,25 @@
 'use strict'; 
 
-const bcrypt = require('bcryptjs');
-const Users = require('../schemas/user-schema');
-const base64 = require('base64')
+// 3rd party dependencies
+const base64 = require('base-64');
+const users = require('../schemas/user-model.js');
 
-module.exports = async function( req, res, next) {
-    if(!req,headers.authorization) {
-        next('Not a Valid Login');
-    }
-}
-
-let basicAuth = req.headers.authorization.split(' ').pop();
-let [user, authorize] = base64.decode(basicAuth).split(':');
-let returns = await Users.findOne({username:user,});
-
-const validUser = await bcrypt.compare(authorize,returns.password);
-
-if(validUser) {
-    let sameUser = new Users(returns);
-    let token = await sameUser.generateToken();
-    req.token = token;
-    next();
-}
-else {
-    next('invalid login information');
-}
+module.exports = (req, res, next) => {
+  // check if the header contains headers
+  if(!req.headers.authorization) {
+    next('invalid login details!');
+  } else {
+    // decode the headers and extract username and password
+    const basic = req.headers.authorization.split(' ')[1];
+    const [userName, password] = base64.decode(basic).split(':');
+    // authenticate the credentials
+    users.authenticateBasic(userName, password)
+      .then(validUser => {
+        // generate token and send it to user
+        const token = users.generateToken(validUser);
+        req.token = token;
+        next();
+      })
+      .catch(error => next(error));
+  }
+};

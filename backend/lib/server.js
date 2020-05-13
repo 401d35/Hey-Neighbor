@@ -13,7 +13,7 @@ const app = express();
 // local modules
 const userRoutes = require('../routes/userRoutes.js');
 const reviewRoutes = require('../routes/reviewRoutes.js');
-
+const itemRoutes = require('../routes/itemRoutes.js');
 
 
 app.use(express.json());
@@ -21,6 +21,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(userRoutes);
 app.use(reviewRoutes);
+app.use(itemRoutes);
 
 module.exports = {
   server: app,

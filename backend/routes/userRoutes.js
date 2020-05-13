@@ -9,7 +9,7 @@ const Model = require('../schemas/model.js');
 const users = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
-const Model = require('../schemas/model.js'); // can get rid of this later
+// const Model = require('../schemas/model.js'); // can get rid of this later
 
 
 userRoutes.post('/signup', handleSignup); // sign up route
@@ -81,10 +81,14 @@ async function getUserById(req, res) {
 }
 
 async function createUser(req, res){
-  let stored = await users.create(req.body);
-  stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
-  delete stored.password;
-  res.status(201).json(stored);
+  try{
+    let stored = await users.create(req.body);
+    stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
+    delete stored.password;
+    res.status(201).json(stored);
+  }catch(e){
+    res.status(401).json(e);
+  }
 }
 
 async function updateUser(req, res) {

@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+// eslint-disable-next-line new-cap
 const reviewRoutes = express.Router();
 const reviewSchema = require('../schemas/review-schema.js');
 const Model = require('../schemas/model.js');
@@ -9,7 +10,7 @@ const Model = require('../schemas/model.js');
 // get all reviews and return to user
 reviewRoutes.get('/review', async (req,res) => {
   let reviewModel = new Model(reviewSchema);
-  let results = await reviewModel.find();
+  let results = await reviewModel.get();
   res.status(200).json(results);
 });
 
@@ -22,22 +23,20 @@ reviewRoutes.get('/review/:id', async (req,res) =>{
 // this will find the review based on the subject and type of review
 // rather than by finding by the review ID
 reviewRoutes.get('/review/:subject_id/:type', async(req,res) => {
-  let reviewModel = new Model(reviewSchema);
-  let query = {reviewSubjet: req.params.subject_id, reviewType: req.params.type};
-  let results = await reviewModel.find(query);
+  // let reviewModel = new Model(reviewSchema);
+  let query = {$and:[{reviewSubject: req.params.subject_id, reviewType: req.params.type,}],};
+  let results = await reviewSchema.find(query);
   res.status(200).json(results);
 });
 
 reviewRoutes.post('/review', async (req,res) =>{
   let reviewModel = new Model(reviewSchema);
-  reviewModel.create(req.body)
-    .then( results => {
-      res.status(201).json(results);
-    })
-    .catch(e => {
-      console.log('malformed review post request');
-      res.status(400).json(e);
-    });
+  try{
+    let stored = await reviewModel.create(req.body);
+    res.status(201).json(stored);
+  }catch(e){
+    res.status(400).json(e);
+  }
 });
 
 reviewRoutes.put('/review/:id', async (req,res) => {
@@ -47,7 +46,6 @@ reviewRoutes.put('/review/:id', async (req,res) => {
       res.status(201).json(results);
     })
     .catch(e =>{
-      console.log('malformed review put request');
       res.status(400).json(e);
     });
 });
@@ -55,7 +53,12 @@ reviewRoutes.put('/review/:id', async (req,res) => {
 reviewRoutes.delete('/review/:id', async (req,res) => {
   let reviewModel = new Model(reviewSchema);
   reviewModel.delete(req.params.id)
-    .then()
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(e => {
+      res.status(401).json(e);
+    });
 });
 
 

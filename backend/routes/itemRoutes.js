@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+// eslint-disable-next-line new-cap
 const itemRoutes = express.Router();
 
 const itemSchema = require ('../schemas/item-schema.js');
@@ -11,7 +12,7 @@ itemRoutes.get('/item/:ITEMid', getITEM);
 itemRoutes.get('/item', getITEM);
 itemRoutes.post('/item', postITEM);
 itemRoutes.put('/item/:ITEMid', putITEM);
-itemRoutes.delete('/item/:ITEMid', deleteITEM);
+itemRoutes.delete('/item/:ITEMid', deactivateITEM);
 
 // get item or itemS
 function getITEM( req, res) {
@@ -24,7 +25,7 @@ function getITEM( req, res) {
     });
 }
 
-//creates a new item 
+//creates a new item
 function postITEM( req, res){
   ITEM.create(req.body)
     .then(data => {
@@ -46,12 +47,14 @@ function putITEM( req, res) {
     });
 }
 
-//delete a item with the matching item id 
-function deleteITEM( req, res) {
-  ITEM.delete(req.params.ITEMid)
-    .then(data => {
-      res.status(202).json(data);
-    });
+//deactivate an item a item with the matching item id
+async function deactivateITEM( req, res) {
+  try{
+    let result = await ITEM.deactivateItem(req.params.ITEMid);
+    res.status(200).json(result);
+  }catch(e){
+    res.status(400).send(e);
+  }
 }
 
 module.exports = itemRoutes;

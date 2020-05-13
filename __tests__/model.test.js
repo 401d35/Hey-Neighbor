@@ -1,3 +1,5 @@
+/* eslint-disable new-cap */
+/* eslint-disable no-unused-vars */
 'use strict';
 
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -68,6 +70,6 @@ describe('Test for Generic Model', () => {
 
     expect(result.username).toBe('test2');
     expect(recordsAfterDeletion[1]).toBeUndefined();
-  })
+  });
 });
 

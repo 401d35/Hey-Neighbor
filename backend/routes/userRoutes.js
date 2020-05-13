@@ -3,7 +3,6 @@
 const express = require('express');
 const userRoutes = express.Router();
 const userSchema = require('../schemas/user-schema.js');
-const itemSchema = require('../schemas/item-schema.js');
 const Model = require('../schemas/model.js');
 
 // return a list of all users in the database
@@ -21,7 +20,7 @@ userRoutes.delete('/user/:id', deactivateUser);
 userRoutes.get('/user/active', getAllActiveUsers);
 
 userRoutes.get('/test', async(req,res)=>{
-  res.json({message: 'pass!'});
+  res.json({message: 'pass!',});
 });
 
 
@@ -50,8 +49,8 @@ async function getUserById(req,res){
     .then(dbUser => {
       res.status(200).json(dbUser[0]);
     })
-    .catch(e => {
-      res.status(400).json(e);
+    .catch(() => {
+      res.status(400).json('No matching user found');
     });
 }
 
@@ -72,16 +71,26 @@ async function updateUser(req,res){
   let updateVals = req.body;
   console.log(typeof updateVals);
   delete updateVals.password; // prevents update of password. this needs a different route to handle something that dangerous
-  let updatedUser = await userModel.update(req.params.id, updateVals);
-  res.status(200).json(updatedUser);
+  try{
+    let updatedUser = await userModel.update(req.params.id, updateVals);
+    res.status(200).json(updatedUser);
+  }catch(e){
+    res.status(401).json('No matching user found');
+  }
 }
 
 async function deactivateUser(req,res){
   let userModel = new Model(userSchema);
-  userModel.update(req.params.id, {'active':false,});
-  let itemModel = new Model(itemSchema);
-  itemModel.find({'_custodyId':req.params.id,'owner':req.params.id}).populate({path:'_owner', select:'_id'})
-    .populate({path:'_custodyId', select:'_id',});
+  try{
+    let deactiveUser = await userModel.update(req.params.id, {'active':false,});
+    console.log(deactiveUser);
+    res.status(201).json(deactiveUser);
+    // let itemModel = new Model(itemSchema);
+    // await itemModel.find({'_custodyId':req.params.id,'owner':req.params.id,}).populate({path:'_owner', select:'_id'})
+    // .populate({path:'_custodyId', select:'_id',});
+  }catch(e){
+    res.status(401).json('No matching user found');
+  }
 }
 
 module.exports = userRoutes;

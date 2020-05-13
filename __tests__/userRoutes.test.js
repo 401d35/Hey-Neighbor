@@ -9,20 +9,19 @@ describe('user routes', () => {
   it('can access test route', () => {
     return mockRequest.get('/test')
       .then( results => {
-        console.log(results.body);
-        expect(results.body).toEqual({ message: 'pass!'});
+        expect(results.body).toEqual({ message: 'pass!',});
       });
   });
 
-  it('can post a user users', () => {
-    let testItem = {
+  it('can create a user', () => {
+    let testUser = {
       userName: faker.name.findName(),
       password: faker.internet.password(),
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
     return mockRequest.post('/user')
-      .send(testItem)
+      .send(testUser)
       .then( data => {
         let record = data.body;
         expect(typeof record).toEqual('object');
@@ -31,14 +30,13 @@ describe('user routes', () => {
   });
 
   it('can get multiple users', async () => {
-    let testItem1 = {
+    let testUser1 = {
       userName: faker.name.findName(),
       password: faker.internet.password(),
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
-    await mockRequest.post('/user').send(testItem1);
-    // let val2 = await mockRequest.post('/user').send(testItem2);
+    await mockRequest.post('/user').send(testUser1);
     return mockRequest.get('/user')
       .then(data => {
         let records = data.body;
@@ -48,41 +46,39 @@ describe('user routes', () => {
   });
 
   it('can get 1 record by _id', async () => {
-    let testItem1 = {
+    let testUser1 = {
       userName: faker.name.findName(),
       password: faker.internet.password(),
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
-    let val1 = await mockRequest.post('/user').send(testItem1);
-    console.log('val1', val1.body);
+    let val1 = await mockRequest.post('/user').send(testUser1);
     return mockRequest.get(`/user/${val1.body._id}`)
       .then( result => {
         expect(typeof result.body).toEqual('object');
-        expect(result.body.userName).toEqual(testItem1.userName);
-        console.log(result.body);
+        expect(result.body.userName).toEqual(testUser1.userName);
       });
   });
 
   it('can update 1 record by _id', async () => {
-    let testItem1 = {
+    let testUser1 = {
       userName: faker.name.findName(),
       password: faker.internet.password(),
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
-    let testItem2 = {
+    let testUser2 = {
       email: faker.internet.email(),
     };
-    let val1 = await mockRequest.post('/user').send(testItem1);
-    let ret1 = await mockRequest.put(`/user/${val1.body._id}`).send(testItem2);
+    let val1 = await mockRequest.post('/user').send(testUser1);
+    let ret1 = await mockRequest.put(`/user/${val1.body._id}`).send(testUser2);
 
-    expect(testItem1.email === ret1.body.email).toEqual(false);
-    expect(testItem2.email === ret1.body.email).toEqual(true);
-    expect(testItem1.userName === ret1.body.userName).toEqual(true);
+    expect(testUser1.email === ret1.body.email).toEqual(false);
+    expect(testUser2.email === ret1.body.email).toEqual(true);
+    expect(testUser1.userName === ret1.body.userName).toEqual(true);
   });
 
-  
+
 });
 
 describe('client error tests', () => {

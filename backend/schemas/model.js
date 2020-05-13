@@ -20,6 +20,23 @@ class Model {
     return this.schema.find(query);
   }
 
+  // update an item by _id ONLY if the owner is registered as having custody
+  async deactivateItem(_id){
+    let updatedFile = await this.schema.findOneAndUpdate({
+      '_id':_id,
+      $where:'this._owner.toString() === this._custodyId.toString()',
+    }, // the query
+    {'active':false,}, // what is updated
+    { new: true, },); // returns the updated doc
+
+
+    if(updatedFile === null){
+      throw 'Error: Item is checked out. Can not deactivate at this time.';
+    }else{
+      return updatedFile;
+    }
+  }
+
   // Read
   get(_id) {
     const queryObject = _id ? { _id, } : {};

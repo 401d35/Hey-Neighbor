@@ -86,8 +86,6 @@ describe('client error tests', () => {
     return mockRequest.post('/user')
       .send()
       .then( data => {
-        let record = data.body;
-        // expect(typeof record).toEqual('object');
         expect(data.statusCode).toEqual(401);
       });
   });

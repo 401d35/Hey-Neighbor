@@ -100,7 +100,7 @@ async function updateUser(req, res) {
 async function deactivateUser(req, res) {
   users.update(req.params.id, {'active':false,});
   let itemModel = new Model(itemSchema);
-  itemModel.find({'_custodyId':req.params.id,'owner':req.params.id}).populate({path:'_owner', select:'_id'})
+  itemModel.find({'_custodyId':req.params.id,'owner':req.params.id,}).populate({path:'_owner', select:'_id',})
     .populate({path:'_custodyId', select:'_id',});
   // send some message back
   res.send('Your account is successfully deactivated!');

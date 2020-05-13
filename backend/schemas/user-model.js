@@ -21,7 +21,7 @@ class User extends model {
   // signup method to save user info in the database
   async signup(record) {
     // check if the username is already used
-    const findUser = await this.schema.find({ userName: record.userName });
+    const findUser = await this.schema.find({ userName: record.userName, });
     if (findUser.length) {
       return Promise.reject('This username has already been used, try other username!');
     } else {
@@ -33,14 +33,15 @@ class User extends model {
   // generate a token
   generateToken(validUser) {
     const userName = validUser.userName;
-    const token = jwt.sign({ userName }, process.env.SECRET);
+    const token = jwt.sign({ userName, }, process.env.SECRET);
     return token;
   }
+
 
   // authenticate Basic Auth
   async authenticateBasic(userName, password) {
     // check if username is valid
-    const validUsername = await this.schema.find({ userName }).select('+password');
+    const validUsername = await this.schema.find({ userName, }).select('+password');
     if (validUsername.length) {
       // check if the password is valid
       console.log(password, validUsername);

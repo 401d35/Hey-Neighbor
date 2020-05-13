@@ -15,11 +15,6 @@ class Model {
     return newRecord.save();
   }
 
-  getActive(){
-    let query = {active:true,};
-    return this.schema.find(query);
-  }
-
   // Read
   get(_id) {
     const queryObject = _id ? { _id, } : {};
@@ -34,6 +29,12 @@ class Model {
   // Delete
   delete(_id) {
     return this.schema.findByIdAndDelete(_id);
+  }
+
+  // get active users
+  getActive(){
+    const query = { active: true, };
+    return this.schema.find(query);
   }
 }
 

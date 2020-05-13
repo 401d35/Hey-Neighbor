@@ -3,7 +3,9 @@
 const express = require('express');
 const itemRoutes = express.Router();
 
-const ITEM = require ('../schemas/item-schema.js');
+const itemSchema = require ('../schemas/item-schema.js');
+const Model = require('../schemas/model.js');
+const ITEM = new Model(itemSchema);
 
 itemRoutes.get('/item/:ITEMid', getITEM);
 itemRoutes.get('/item', getITEM);

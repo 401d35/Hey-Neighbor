@@ -1,4 +1,4 @@
-'use strict'; 
+'use strict';
 
 // 3rd party dependencies
 const base64 = require('base-64');

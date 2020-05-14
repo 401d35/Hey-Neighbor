@@ -31,6 +31,8 @@
     "superagent": "^5.2.2"
   },
   "devDependencies": {
+    "@code-fellows/supergoose": "^1.0.2",
+    "body-parser": "^1.19.0",
     "jest": "^26.0.1",
     "mongodb-memory-server": "^6.6.0",
     "supertest": "^4.0.2"

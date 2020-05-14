@@ -5,7 +5,7 @@
 - Morgan Heinemann
 - Wenhao Piao
 - Alex Pena
-- Alex Pederson
+- Alex Pedersen
 
 ## Project Overview
 

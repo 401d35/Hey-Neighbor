@@ -1,46 +1,60 @@
+'use strict';
+
 const express = require('express');
-const router = express.Router();
-const ITEM = require ('../item-schema.js');
+// eslint-disable-next-line new-cap
+const itemRoutes = express.Router();
 
-router.get('/item/:ITEMid', getITEM);
-router.get('/item', getITEM);
-router.post('/item', postITEM);
-router.put('/item/:ITEMid', putITEM)
-router.delete('/item/:ITEMid', deleteITEM);
+const itemSchema = require ('../schemas/item-schema.js');
+const Model = require('../schemas/model.js');
+const ITEM = new Model(itemSchema);
 
-//get item with matching id
-function getITEM( req, res, next) {
-    ITEM.get(req.params.ITEMid)
-        .then(data => {
-            res.status(200).json(data);
-    })
-        .catch(next);
-}
+itemRoutes.get('/item/:ITEMid', getITEM);
+itemRoutes.get('/item', getITEM);
+itemRoutes.post('/item', postITEM);
+itemRoutes.put('/item/:ITEMid', putITEM);
+itemRoutes.delete('/item/:ITEMid', deactivateITEM);
 
-//creates a new item 
-function postITEM( req, res, next){
-    ITEM.create(req.body)
-        .then(data => {
-            res.status(201).json(data);
-        })
-        .catch(next);
-}
-
-//update item with the matching id
-function putITEM( req, res, next) {
-    ITEM.update(req.params.ITEMid, req.body)
-        .then(data => {
-            res.status(201).json(data);
-        })
-        .catch(next);
-}
-
-//delete a item with the matching item id 
-function deleteITEM( req, res) {
-    ITEM.delete(req.params.ITEMid)
+// get item or itemS
+function getITEM( req, res) {
+  ITEM.get(req.params.ITEMid)
     .then(data => {
-        res.status(202).json(data);
+      res.status(200).json(data);
+    })
+    .catch(e => {
+      res.status(401).json(e);
     });
 }
 
-module.exports = router
+//creates a new item
+function postITEM( req, res){
+  ITEM.create(req.body)
+    .then(data => {
+      res.status(201).json(data);
+    })
+    .catch(e => {
+      res.status(401).json(e);
+    });
+}
+
+//update item with the matching id
+function putITEM( req, res) {
+  ITEM.update(req.params.ITEMid, req.body)
+    .then(data => {
+      res.status(201).json(data);
+    })
+    .catch(e => {
+      res.status(401).json(e);
+    });
+}
+
+//deactivate an item a item with the matching item id
+async function deactivateITEM( req, res) {
+  try{
+    let result = await ITEM.deactivateItem(req.params.ITEMid);
+    res.status(200).json(result);
+  }catch(e){
+    res.status(400).send(e);
+  }
+}
+
+module.exports = itemRoutes;

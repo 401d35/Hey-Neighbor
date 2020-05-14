@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 'use strict';
 
 const app = require('../backend/lib/server.js').server;

@@ -114,7 +114,8 @@ describe('client error tests', () => {
     return mockRequest.post('/user')
       .send()
       .then( data => {
-        expect(data.statusCode).toEqual(401);
+        // console.log(data.body);
+        expect(data.statusCode).toEqual(406);
       });
   });
 
@@ -132,7 +133,7 @@ describe('client error tests', () => {
         expect(data.status).toEqual(400);
       })
       .catch(error => {
-        console.log(error);
+        // console.log(error);
         expect(error).toEqual('This username has already been used, try other username');
       });
   });

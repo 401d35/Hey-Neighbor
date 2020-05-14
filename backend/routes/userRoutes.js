@@ -114,7 +114,7 @@ async function createUser(req, res){
     delete stored.password;
     res.status(201).json(stored);
   }catch(e){
-    res.status(401).json(e);
+    res.status(406).json(e);
   }
 }
 

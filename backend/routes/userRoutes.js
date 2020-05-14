@@ -18,7 +18,7 @@ userRoutes.post('/oauth', (req, res) => {
   superagent.get(otherTokenEndpoint)
     .then(verifiedToken => {
       // Do mongo stuff to store this data
-      res.status(200).end(); // .send(verifiedToken.body);
+      res.status(200).send(verifiedToken.body);
     });
 });
 

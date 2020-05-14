@@ -6,6 +6,8 @@ const supergoose = require('@code-fellows/supergoose');
 const mockRequest = supergoose(app);
 const faker = require('faker');
 
+let sampleUserName = null;
+
 describe('user routes', () => {
   it('can access test route', () => {
     return mockRequest.get('/test')
@@ -37,6 +39,7 @@ describe('user routes', () => {
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
+    sampleUserName = testUser1.userName;
     await mockRequest.post('/user').send(testUser1);
     return mockRequest.get('/user')
       .then(data => {
@@ -80,7 +83,7 @@ describe('user routes', () => {
   });
 
   // test for sign up route
-  it('save a user credential to DB upon signup and send a token back to client', async () => {
+  it('save a user credential to DB upon signup and send a token back to client', () => {
     const testUser1 = {
       userName: 'test1',
       password: 'test1',
@@ -93,9 +96,16 @@ describe('user routes', () => {
         expect(data.status).toEqual(201);
         // expect to receive a toekn upon successful sign up
         expect(typeof data.text).toEqual('string');
+      })
+      .catch(e => {
+        console.log(e);
       });
   });
 
+  it('can get a user by userName', async () => {
+    let x = await mockRequest.get(`/user/name/${sampleUserName}`);
+    expect(x.body.userName).toEqual(sampleUserName);
+  });
 
 });
 

@@ -16,8 +16,6 @@ const reviewRoutes = require('../routes/reviewRoutes.js');
 const itemRoutes = require('../routes/itemRoutes.js');
 const rentalRoutes = require('../routes/rentalRoutes.js');
 
-
-const app = express();
 dotenv.config();
 
 app.use(express.urlencoded({extended: true}));

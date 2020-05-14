@@ -68,15 +68,20 @@ async function incrementRentalProcess(req,res){
     let itemModel = new Model(itemSchema);
     let updatedItem = null;
     if(updatedRental.currentStatus.charAt(0) === '2'){
-      updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._borrower,}, {new:true,});
+      updatedItem = await itemModel.update(
+        {'_id':updatedRental._item,},
+        {'_custodyId':updatedRental._borrower,}, 
+        {new:true,});
     }else if(updatedRental.currentStatus.charAt(0) === '4'){
-      updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._owner,}, {new:true,});
+      updatedItem = await itemModel.update(
+        {'_id':updatedRental._item,},
+        {'_custodyId':updatedRental._owner,}, 
+        {new:true,});
     }
     res.status(200).json(updatedRental);
   }catch(e){
     res.status(401).json(e);
   }
-
 }
 
 // return specific rental doc or all of them

@@ -7,15 +7,45 @@ const rentalRoutes = express.Router();
 const rentalSchema = require('../schemas/rental-schema.js');
 const Model = require('../schemas/model.js');
 const itemSchema = require('../schemas/item-schema.js');
-
+const giveMeAStory = require('../lib/giveMeAStory.js');
 
 rentalRoutes.get('/rentaldoc', getRentalDocs);
 rentalRoutes.get('/rentaldoc/:_id',getRentalDocs);
 rentalRoutes.post('/rentaldoc', createRentalDoc);
 rentalRoutes.put('/rentaldoc/:_id', incrementRentalProcess);
 rentalRoutes.delete('/rentaldoc/:_id', deactivateRentalDoc);
+rentalRoutes.get('/rentaldoc_pretty', getPrettyRecords);
 
 
+
+async function getPrettyRecords(req,res){
+  // let rentalModel = new Model(rentalSchema);
+  try{
+    let records = await rentalSchema.find()
+      .populate('_owner','userName')
+      .populate('_borrower', 'userName')
+      .populate('_item', 'item');
+    console.log('records', records);
+
+    let recordsSummary = [];
+    records.forEach(rentalDoc => {
+      let obj = {};
+      obj._id = rentalDoc._id;
+      obj.owner = rentalDoc._owner.userName;
+      obj.borrower = rentalDoc._borrower.userName;
+      obj.item = rentalDoc._item.item;
+      obj.currentStatus = rentalDoc.currentStatus;
+      recordsSummary.push(obj);
+    });
+
+    let prettyResponse = giveMeAStory(recordsSummary);
+
+    res.status(200).json(prettyResponse);
+  }catch(e){
+    res.status(400).json(e);
+  }
+  
+}
 
 // create a rental doc
 async function createRentalDoc(req,res){
@@ -35,15 +65,12 @@ async function incrementRentalProcess(req,res){
   try{
     let rentalModel = new Model(rentalSchema);
     let updatedRental = await rentalModel.resave(req.params._id);
-    // console.log('***', updatedRental);
     let itemModel = new Model(itemSchema);
     let updatedItem = null;
     if(updatedRental.currentStatus.charAt(0) === '2'){
       updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._borrower,}, {new:true,});
-      // console.log('updatedItem-2', updatedItem);
     }else if(updatedRental.currentStatus.charAt(0) === '4'){
       updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._owner,}, {new:true,});
-      // console.log('updatedItem-4', updatedItem);
     }
     res.status(200).json(updatedRental);
   }catch(e){

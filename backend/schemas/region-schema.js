@@ -7,8 +7,8 @@ const regionSchema = new Schema({
     lat: {type: Number, required: true},
     lon: {type: Number, required: true},
     address: {type: String, required: true},
-    name: {type: String, required},
-    range: {type: Number, required}
+    name: {type: String, required: true},
+    range: {type: Number, required: false}
 });
 
 module.exports = mongoose.model('region', regionSchema);

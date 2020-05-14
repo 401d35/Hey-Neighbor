@@ -3,7 +3,6 @@ require('../../schemas/model');
 require('../../routes/userRoutes');
 
 
-let access_token = '';
 const superagent = require('superagent');
 const client_id = process.env.OAUTH_CLIENT_ID;
 const client_secret = process.env.OAUTH_CLIENT_SECRET;
@@ -30,7 +29,7 @@ module.exports = async function googleOAuth(req, res, next) {
     async function exchangeCodeForToken(code) {
         let query = {
             client_id: process.env.OAUTH_CLIENT_ID,
-            redirect_uri: 'http://localhost:3000/oauth',
+            redirect_uri: remoteAPI,
             response_type: 'token',
             scope: 'https://www.googleapis.com/auth/userinfo.profile',
             include_granted_scopes: 'true',
@@ -38,14 +37,13 @@ module.exports = async function googleOAuth(req, res, next) {
         };
         try {
             let token_response = await superagent.post(tokenEndPoint).send(query);
-            // console.log('this is the access token*****************', token_response);
         } catch (e) {
             console.log('error', e);
         }
-        // console.log('I am a token response', token_response);
-
+        console.log('this is the token response *****************', token_response);
         return token_response;
     }
+
     async function getRemoteUserInfo(remoteToken) {
         return user;
     }

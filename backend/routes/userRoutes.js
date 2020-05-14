@@ -4,14 +4,15 @@
 const express = require('express');
 const userRoutes = express.Router();
 const superagent = require('superagent');
-const userSchema = require('../schemas/user-schema.js');
 const Model = require('../schemas/model.js');
+const basicAuth = require('../auth/basic-auth.js')
+const userSchema = require('../schemas/user-schema.js');
 const oauth = require('../auth/google-oauth/google-oauth.js');
 
 userRoutes.post('/oauth', (req, res) => {
   let token = req.body.id_token;
-  let otherTokenEndpoint = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
-  superagent.get(otherTokenEndpoint)
+  let secondTokenEndpoint = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
+  superagent.get(secondTokenEndpoint)
     .then(verifiedToken => {
       // Do mongo stuff to store this data
       res.status(200).end() // .send(verifiedToken.body);

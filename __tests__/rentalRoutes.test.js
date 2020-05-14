@@ -41,7 +41,7 @@ describe('rental routes', () => {
     };
 
     owner = await mockRequest.post('/user').send(ownerData);
-    borrower = await mockRequest.post('/user').send(ownerData);
+    borrower = await mockRequest.post('/user').send(borrowerData);
 
     item1data = {
       _owner: owner.body._id,
@@ -152,22 +152,29 @@ describe('rental routes', () => {
     // console.log('item3', item3.body);
     expect(item3.body[0]._owner === item3.body[0]._custodyId).toEqual(true);
 
-    let rental3_2 = await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
     let item3V2 = await mockRequest.get(`/item/${item3.body[0]._id}`);
     // console.log('item3V2', item3V2.body);
     expect(item3V2.body[0]._owner === item3V2.body[0]._custodyId).toEqual(false);
 
-    let rental3_3 = await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
     let item3V3 = await mockRequest.get(`/item/${item3.body[0]._id}`);
     // console.log('item3V3', item3V3.body);
     expect(item3V3.body[0]._owner === item3V3.body[0]._custodyId).toEqual(false);
 
-    let rental3_4 = await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
     let item3V4 = await mockRequest.get(`/item/${item3.body[0]._id}`);
     // console.log('item3V4', item3V4.body);
     expect(item3V4.body[0]._owner === item3V4.body[0]._custodyId).toEqual(true);
     // expect(rental3_4.body.)
 
+  });
+
+  it('will get the names of the fields when needed', async () => {
+    let test = await mockRequest.get('/rentaldoc_pretty');
+    console.log('***', test.body);
+    expect(test.body.length).toEqual(3);
+    expect(test.status).toEqual(200);
   });
 
 });

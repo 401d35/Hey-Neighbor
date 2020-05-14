@@ -1,4 +1,4 @@
-# Hey Neighbor!
+# Hey Neighbor
 
 ## Authors
 
@@ -21,8 +21,7 @@
 
 - `Google` for Oauth
 - `MongoDB` for data retention
-- [`Trello`](https://trello.com/b/57y9roix/team-401d35) for task tracking 
-
+- [`Trello`](https://trello.com/b/57y9roix/team-401d35) for task tracking
 
 ### Domain Model
 
@@ -36,17 +35,23 @@
 * OAUTH_SECRET_ID=M_xA5KS1W5S4B09Zdr7YmrVb
 * GOOGLE_APPLICATION_CREDENTIALS=../backend/Google Aouth/auth/client_secret_444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com.json
 
-### Generic Model 
-This generic model supports basic mongoDB CRUD operations. This is for creating dynamic model later.
-* `create(record)`: create a record in the DB and return it
-* `get(_id)`: return a record by _id from the DB; if _id is not given, it will return all the records from the DB
-* `update(_id, record)`: update a record in the DB by _id and return updated record
-* `delete(_id)`: delete a record in the DB by _id and return deleted record
+- Create your own .env file in root folder
+  - PORT=3000
+  - MONGODB_URL=mongodb://localhost/hey-neighbor
+  - SECRET=JWTSECRETKEY
+
+### Generic Model
+
+- This generic model supports basic mongoDB CRUD operations. This is for creating dynamic model later.
+  - `create(record)`: create a record in the DB and return it
+  - `get(_id)`: return a record by `_id` from the DB; if `_id` is not given, it will return all the records from the DB
+  - `update(_id, record)`: update a record in the DB by _id and return updated record
+  - `delete(_id)`: delete a record in the DB by _id and return deleted record
 
 ### Schemas
 
 ### API Routes
 
 ### Tests
-* generic model: Run Command `__tests__/model.test.js --verbose --coverage`
 
+- generic model: Run Command `__tests__/model.test.js --verbose --coverage`

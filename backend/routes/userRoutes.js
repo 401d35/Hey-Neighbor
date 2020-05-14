@@ -16,27 +16,19 @@ userRoutes.post('/oauth', (req, res) => {
   let token = req.body.id_token;
   let otherTokenEndpoint = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
   superagent.get(otherTokenEndpoint)
-    .then(verifiedToken => {
-      // Do mongo stuff to store this data
-      res.status(200).end() // .send(verifiedToken.body);
+    .then(response => {
+      const userName = response.body.email;
+      const token = users.generateToken({ userName });
+      const newRecord = {
+        userName: response.body.email,
+        password: 'anything',
+        email: response.body.email,
+        address: 'google'
+      };
+      users.signup(newRecord);
+      res.status(200).send(token);
     });
 });
-
-userRoutes.get('/user', async function (req, res) {
-  let userList = USER.find({});
-  res.status(200).json(userList);
-});
-
-userRoutes.get('/user/:userName', async function (req, res) {
-  let dbUser = USER.find({
-    'userName': req.body.userName,
-  });
-  if (dbUser.length > 0) {
-    delete dbUser[0].password;
-    res.status(200).json(dbUser[0]);
-  }
-});
-
 
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route

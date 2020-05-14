@@ -110,13 +110,9 @@ describe('user routes', () => {
 });
 
 describe('client error tests', () => {
-  it('will fail if user post does not contain all fields', () =>{
-    return mockRequest.post('/user')
-      .send()
-      .then( data => {
-        // console.log(data.body);
-        expect(data.statusCode).toEqual(406);
-      });
+  it('will fail if user post does not contain all fields', async () =>{
+    let data = await mockRequest.post('/user').send();
+    expect(data.statusCode).toEqual(406);
   });
 
   it('should raise a error when try to use registered username to sign up', () => {

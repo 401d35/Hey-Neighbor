@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 const app = require('../backend/lib/server.js').server;
@@ -78,6 +79,23 @@ describe('user routes', () => {
     expect(testUser1.userName === ret1.body.userName).toEqual(true);
   });
 
+  // test for sign up route
+  it('save a user credential to DB upon signup and send a token back to client', async () => {
+    const testUser1 = {
+      userName: 'test1',
+      password: 'test1',
+      email: faker.internet.email(),
+      address: faker.address.streetAddress(),
+    };
+
+    mockRequest.post('/signup').send(testUser1)
+      .then(data => {
+        expect(data.status).toEqual(201);
+        // expect to receive a toekn upon successful sign up
+        expect(typeof data.text).toEqual('string');
+      });
+  });
+
 
 });
 
@@ -87,8 +105,26 @@ describe('client error tests', () => {
       .send()
       .then( data => {
         let record = data.body;
-        // expect(typeof record).toEqual('object');
         expect(data.statusCode).toEqual(401);
+      });
+  });
+
+  it('should raise a error when try to use registered username to sign up', () => {
+    // username test1 is already registered above
+    const testUser1 = {
+      userName: 'test1',
+      password: 'test1',
+      email: faker.internet.password(),
+      address: faker.address.streetAddress(),
+    };
+
+    mockRequest.post('/signup').send(testUser1)
+      .then(data => {
+        expect(data.status).toEqual(400);
+      })
+      .catch(error => {
+        console.log(error);
+        expect(error).toEqual('This username has already been used, try other username');
       });
   });
 });

@@ -16,9 +16,15 @@ const reviewRoutes = require('../routes/reviewRoutes.js');
 const itemRoutes = require('../routes/itemRoutes.js');
 
 
+
+const app = express();
+dotenv.config();
+
+app.use(express.urlencoded({extended: true}));
+app.use(express.static('./public'));
 app.use(express.json());
-app.use(cors());
 app.use(morgan('dev'));
+app.use(cors());
 app.use(userRoutes);
 app.use(reviewRoutes);
 app.use(itemRoutes);

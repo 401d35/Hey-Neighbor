@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 
 const itemSchema = new Schema({
   _owner: {type: mongoose.Schema.Types.ObjectId, ref:'user',},
-  owner:{type: String, required:false,},
   item: {type: String, required: true,},
   type: {type: String, required: true,},
   documentation: {type: String, required: false,},
@@ -14,7 +13,16 @@ const itemSchema = new Schema({
   review: {type: Number, required: false,},
   image: {type: String, required: false,},
   active: {type: Boolean, default: true, required: false,},
-  _custodyId: {type: mongoose.Schema.Types.ObjectId, ref:'user',},
+  _custodyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'user',
+    default: function() {
+      if(this._owner){
+        return this._owner;
+      }return null;
+    },
+  },
 });
+
 
 module.exports = mongoose.model('item', itemSchema);

@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 
 let rental1data = null;
 let rental2data = null;
+let rental3data = null;
 let owner = null;
 let borrower = null;
 let item1data = null;
@@ -19,6 +20,7 @@ let item1 = null;
 let item2 = null;
 let rental1 = null;
 let rental2 = null;
+let rental3 = null;
 
 describe('rental routes', () => {
 
@@ -39,7 +41,7 @@ describe('rental routes', () => {
     };
 
     owner = await mockRequest.post('/user').send(ownerData);
-    borrower = await mockRequest.post('/user').send(ownerData);
+    borrower = await mockRequest.post('/user').send(borrowerData);
 
     item1data = {
       _owner: owner.body._id,
@@ -67,6 +69,12 @@ describe('rental routes', () => {
     };
 
     rental2data = {
+      _owner: mongoose.Types.ObjectId(owner.body._id),
+      _borrower: mongoose.Types.ObjectId(borrower.body._id),
+      _item: mongoose.Types.ObjectId(item2.body._id),
+    };
+
+    rental3data = {
       _owner: mongoose.Types.ObjectId(owner.body._id),
       _borrower: mongoose.Types.ObjectId(borrower.body._id),
       _item: mongoose.Types.ObjectId(item2.body._id),
@@ -135,6 +143,38 @@ describe('rental routes', () => {
     //at stage 4, can be closed
     let rental2copy3del = await mockRequest.delete(`/rentaldoc/${rental1.body._id}`);
     expect(rental2copy3del.status).toEqual(200);
+  });
+
+  it('will update the related item _custodyId as the rental process increments', async () => {
+    // make a new rental doc
+    rental3 = await mockRequest.post('/rentaldoc').send(rental3data);
+    let item3 = await mockRequest.get(`/item/${rental3.body._item}`);
+    // console.log('item3', item3.body);
+    expect(item3.body[0]._owner === item3.body[0]._custodyId).toEqual(true);
+
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    let item3V2 = await mockRequest.get(`/item/${item3.body[0]._id}`);
+    // console.log('item3V2', item3V2.body);
+    expect(item3V2.body[0]._owner === item3V2.body[0]._custodyId).toEqual(false);
+
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    let item3V3 = await mockRequest.get(`/item/${item3.body[0]._id}`);
+    // console.log('item3V3', item3V3.body);
+    expect(item3V3.body[0]._owner === item3V3.body[0]._custodyId).toEqual(false);
+
+    await mockRequest.put(`/rentaldoc/${rental3.body._id}`);
+    let item3V4 = await mockRequest.get(`/item/${item3.body[0]._id}`);
+    // console.log('item3V4', item3V4.body);
+    expect(item3V4.body[0]._owner === item3V4.body[0]._custodyId).toEqual(true);
+    // expect(rental3_4.body.)
+
+  });
+
+  it('will get the names of the fields when needed', async () => {
+    let test = await mockRequest.get('/rentaldoc_pretty');
+    console.log('***', test.body);
+    expect(test.body.length).toEqual(3);
+    expect(test.status).toEqual(200);
   });
 
 });

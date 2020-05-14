@@ -30,6 +30,20 @@ userRoutes.post('/oauth', (req, res) => {
     });
 });
 
+userRoutes.get('/user/name/:userName', async function (req, res) {
+  let userModel = new Model(userSchema);
+  try {
+    let dbUser = await userSchema.find({
+      'userName': req.params.userName,
+    });
+    if (dbUser.length === 1) {
+      res.status(200).json(dbUser[0]);
+    }
+  }catch(e){
+    res.status(400).json(e);
+  }
+});
+
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
@@ -105,7 +119,7 @@ async function createUser(req, res){
     delete stored.password;
     res.status(201).json(stored);
   }catch(e){
-    res.status(401).json(e);
+    res.status(406).json(e);
   }
 }
 

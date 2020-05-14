@@ -11,24 +11,25 @@ const tokenEndPoint = 'https://accounts.google.com/o/oauth2/v2/auth';
 const remoteAPI = 'http://localhost:3000/oauth';
 
 module.exports = async function googleOAuth(req, res, next) {
-    try {
-        let code = req.body.idtoken;
-        console.log('(1) CODE:', code);
-        let remoteToken = await exchangeCodeForToken(code);
-        console.log('(2) ACCESS TOKEN:', remoteToken);
-        let remoteUser = await getRemoteUserInfo(remoteToken);
-        console.log('(3) GOOGLE USER', remoteUser);
-        let [user, token] = await getUser(remoteUser);
-        req.user = user;
-        req.token = token;
-        console.log('(4) LOCAL USER', user);
-        next();
-    } catch (e) {
-        next(`ERROR: ${e.message}`);
-    };
+  try {
+    let code = req.body.id_token;
+    console.log('(1) CODE:', code);
+    let remoteToken = await exchangeCodeForToken(code);
+    console.log('(2) ACCESS TOKEN:', remoteToken);
+    let remoteUser = await getRemoteUserInfo(remoteToken);
+    console.log('(3) GOOGLE USER', remoteUser);
+    let [user, token] = await getUser(remoteUser);
+    req.user = user;
+    req.token = token;
+    console.log('(4) LOCAL USER', user);
+    next();
+  } catch (e) {
+      next(`ERROR: ${e.message}`);
+  };
 
     async function exchangeCodeForToken(code) {
         let query = {
+            code: code,
             client_id: process.env.OAUTH_CLIENT_ID,
             redirect_uri: 'http://localhost:3000/oauth',
             response_type: 'token',
@@ -38,6 +39,7 @@ module.exports = async function googleOAuth(req, res, next) {
         };
         try {
             let token_response = await superagent.post(tokenEndPoint).send(query);
+            console.log(token_response);
             // console.log('this is the access token*****************', token_response);
         } catch (e) {
             console.log('error', e);

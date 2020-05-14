@@ -10,7 +10,7 @@ const rentalSchema = new Schema({
   initiatedDate: {type: Date, default: null,},
   lastUpdate: {type: Date, },
   currentStatus: {type:String, default:null,},
-  active:{type:Boolean, default:true,},
+  openRental:{type:Boolean, default:true,},
   archived:{type: Boolean, default:false,},
 });
 
@@ -22,7 +22,6 @@ const rentalSchema = new Schema({
 // each stage will not to be processed in sequence via
 
 rentalSchema.pre('save', function(){
-  console.log('presave trigger', new Date(Date.now()));
   this.lastUpdate = new Date(Date.now());
 
   if(this.initiatedDate === null){
@@ -43,7 +42,7 @@ rentalSchema.pre('save', function(){
     this.currentStatus = '4-returnAck';
     break;
   case '4-returnAck':
-    this.archived = true;
+    this.openRental = false;
     break;
   default:
     break;

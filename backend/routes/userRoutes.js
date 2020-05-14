@@ -3,19 +3,41 @@
 
 const express = require('express');
 const userRoutes = express.Router();
-
+const superagent = require('superagent');
 const userSchema = require('../schemas/user-schema.js');
 const Model = require('../schemas/model.js');
-const users = require('../schemas/user-model.js');
-const basicAuth = require('../auth/basic-auth.js');
-const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
-// const Model = require('../schemas/model.js'); // can get rid of this later
+const oauth = require('../auth/google-oauth/google-oauth.js');
+
+userRoutes.post('/oauth', (req, res) => {
+  let token = req.body.id_token;
+  let otherTokenEndpoint = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`;
+  superagent.get(otherTokenEndpoint)
+    .then(verifiedToken => {
+      // Do mongo stuff to store this data
+      res.status(200).end() // .send(verifiedToken.body);
+    });
+});
+
+userRoutes.get('/user', async function (req, res) {
+  let userList = USER.find({});
+  res.status(200).json(userList);
+});
+
+userRoutes.get('/user/:userName', async function (req, res) {
+  let dbUser = USER.find({
+    'userName': req.body.userName,
+  });
+  if (dbUser.length > 0) {
+    delete dbUser[0].password;
+    res.status(200).json(dbUser[0]);
+  }
+});
 
 
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
-userRoutes.get('/user', getAllUsers );
+userRoutes.get('/user', getAllUsers);
 // return only the single user, no password
 userRoutes.get('/user/:id', getUserById);
 userRoutes.post('/user', createUser);

@@ -6,6 +6,10 @@ const userRoutes = express.Router();
 const superagent = require('superagent');
 const userSchema = require('../schemas/user-schema.js');
 const Model = require('../schemas/model.js');
+const users = require('../schemas/user-model.js');
+const basicAuth = require('../auth/basic-auth.js');
+const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
+
 const oauth = require('../auth/google-oauth/google-oauth.js');
 
 userRoutes.post('/oauth', (req, res) => {
@@ -63,9 +67,9 @@ function handleSignin(req, res) {
 function handleSignup(req, res) {
   users.signup(req.body)
     .then(created => {
-      // delete password property
-      delete created.password;
-      res.status(201).json(created);
+      // generate token and send it back to user
+      const token = users.generateToken(created);
+      res.status(201).send(token);
     })
     .catch(error => {
       res.status(400).send(error);

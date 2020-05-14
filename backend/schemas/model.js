@@ -20,6 +20,23 @@ class Model {
     return this.schema.find(query);
   }
 
+  async resave(_id){
+    let x = await this.schema.findById(_id, function(err, doc){
+      if(doc){
+        doc.save(function(){
+          console.log('saving this thing');
+          // return doc;
+        });
+        console.log('gonna return', doc);
+        return doc;
+      }
+    });
+    console.log('***X', x);
+    let y = await this.schema.findById(_id);
+    console.log('y', y);
+    return y;
+  }
+
   // update an item by _id ONLY if the owner is registered as having custody
   async deactivateItem(_id){
     let updatedFile = await this.schema.findOneAndUpdate({
@@ -45,6 +62,7 @@ class Model {
 
   // Update
   update(_id, record) {
+    console.log(_id, record);
     return this.schema.findByIdAndUpdate(_id, record, { new: true, }); // return updated record
   }
 

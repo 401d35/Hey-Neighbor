@@ -14,7 +14,7 @@ const app = express();
 const userRoutes = require('../routes/userRoutes.js');
 const reviewRoutes = require('../routes/reviewRoutes.js');
 const itemRoutes = require('../routes/itemRoutes.js');
-
+const rentalRoutes = require('../routes/rentalRoutes.js');
 
 app.use(express.json());
 app.use(cors());
@@ -22,6 +22,7 @@ app.use(morgan('dev'));
 app.use(userRoutes);
 app.use(reviewRoutes);
 app.use(itemRoutes);
+app.use(rentalRoutes);
 
 module.exports = {
   server: app,

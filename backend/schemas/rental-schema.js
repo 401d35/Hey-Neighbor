@@ -7,9 +7,9 @@ const rentalSchema = new Schema({
   _owner:{type: mongoose.Schema.Types.ObjectId, ref:'user',required:true,},
   _borrower: {type: mongoose.Schema.Types.ObjectId, ref:'user',required:true,},
   _item: {type: mongoose.Schema.Types.ObjectId, ref:'item',required:true,},
-  initiatedDate: {type: Date, default: Date.now,},
+  initiatedDate: {type: Date, default: null,},
   lastUpdate: {type: Date, },
-  currentStatus: {type:String, default:'1-borrowRequest',},
+  currentStatus: {type:String, default:null,},
   active:{type:Boolean, default:true,},
   archived:{type: Boolean, default:false,},
 });
@@ -22,9 +22,17 @@ const rentalSchema = new Schema({
 // each stage will not to be processed in sequence via
 
 rentalSchema.pre('save', function(){
+  console.log('presave trigger', new Date(Date.now()));
   this.lastUpdate = new Date(Date.now());
 
+  if(this.initiatedDate === null){
+    this.initiatedDate = new Date(Date.now());
+  }
+
   switch(this.currentStatus){
+  case null:
+    this.currentStatus = '1-borrowRequest';
+    break;
   case '1-borrowRequest':
     this.currentStatus = '2-borrowApproved';
     break;
@@ -38,11 +46,12 @@ rentalSchema.pre('save', function(){
     this.archived = true;
     break;
   default:
-    this.currentStatus = '1-borrowRequest';
     break;
   }
 
 });
+
+
 
 
 module.exports = mongoose.model('rentaldoc', rentalSchema);

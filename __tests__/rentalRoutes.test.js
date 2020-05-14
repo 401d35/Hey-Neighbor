@@ -16,7 +16,7 @@ let ownerData = null;
 let borrowerData = null;
 let item1 = null;
 let item2 = null;
-
+let rental1 = null;
 
 describe('rental routes', () => {
 
@@ -74,8 +74,26 @@ describe('rental routes', () => {
 
 
   it('can create new rental requests', async() => {
-    let rental1 = await mockRequest.post('/rentaldoc').send(rental1data);
-    console.log('***', rental1.body);
+    // const realDateNow = Date.now.bind(global.Date);
+    const dateNowStub = jest.fn(() => 1589331600000); //Wednesday, May 13, 2020 1:00:00 AM
+    global.Date.now = dateNowStub;
+
+    rental1 = await mockRequest.post('/rentaldoc').send(rental1data);
+    // console.log('***', rental1.body);
+    expect(rental1.body.currentStatus).toEqual('1-borrowRequest');
+    expect(typeof rental1.body._owner).toEqual('string');
+    expect(typeof rental1.body._borrower).toEqual('string');
+    expect(typeof rental1.body._item).toEqual('string');
+    expect(rental1.body.initiatedDate).toEqual('2020-05-13T01:00:00.000Z');
+    expect(rental1.body.lastUpdate).toEqual('2020-05-13T01:00:00.000Z');
+  });
+
+  it('can update a rental request incrementaly', async() => {
+    const dateNowStub = jest.fn(() => 1589335200000); //2020-05-13T02:00:00.000Z
+    global.Date.now = dateNowStub;
+    // console.log('MY ID', rental1.body._id);
+    let updatedRental = await mockRequest.put(`/rentaldoc/${rental1.body._id}`);
+    console.log('***rentalFinal', updatedRental.body);
   });
 
 });

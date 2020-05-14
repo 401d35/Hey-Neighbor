@@ -6,6 +6,8 @@ const rentalRoutes = express.Router();
 
 const rentalSchema = require('../schemas/rental-schema.js');
 const Model = require('../schemas/model.js');
+const itemSchema = require('../schemas/item-schema.js');
+
 
 rentalRoutes.get('/rentaldoc', getRentalDocs);
 rentalRoutes.get('/rentaldoc/:_id',getRentalDocs);
@@ -33,6 +35,16 @@ async function incrementRentalProcess(req,res){
   try{
     let rentalModel = new Model(rentalSchema);
     let updatedRental = await rentalModel.resave(req.params._id);
+    // console.log('***', updatedRental);
+    let itemModel = new Model(itemSchema);
+    let updatedItem = null;
+    if(updatedRental.currentStatus.charAt(0) === '2'){
+      updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._borrower,}, {new:true,});
+      // console.log('updatedItem-2', updatedItem);
+    }else if(updatedRental.currentStatus.charAt(0) === '4'){
+      updatedItem = await itemModel.update({'_id':updatedRental._item,},{'_custodyId':updatedRental._owner,}, {new:true,});
+      // console.log('updatedItem-4', updatedItem);
+    }
     res.status(200).json(updatedRental);
   }catch(e){
     res.status(401).json(e);

@@ -18,22 +18,23 @@ userRoutes.post('/oauth', (req, res) => {
   superagent.get(otherTokenEndpoint)
     .then(verifiedToken => {
       // Do mongo stuff to store this data
-      res.status(200).end() // .send(verifiedToken.body);
+      res.status(200).end(); // .send(verifiedToken.body);
     });
 });
 
-userRoutes.get('/user', async function (req, res) {
-  let userList = USER.find({});
-  res.status(200).json(userList);
-});
+userRoutes.get('/user/name/:userName', async function (req, res) {
+  let userModel = new Model(userSchema);
 
-userRoutes.get('/user/:userName', async function (req, res) {
-  let dbUser = USER.find({
-    'userName': req.body.userName,
-  });
-  if (dbUser.length > 0) {
-    delete dbUser[0].password;
-    res.status(200).json(dbUser[0]);
+  try {
+    let dbUser = await userSchema.find({
+      'userName': req.params.userName,
+    });
+
+    if (dbUser.length === 1) {
+      res.status(200).json(dbUser[0]);
+    }
+  }catch(e){
+    res.status(400).json(e);
   }
 });
 
@@ -113,7 +114,7 @@ async function createUser(req, res){
     delete stored.password;
     res.status(201).json(stored);
   }catch(e){
-    res.status(401).json(e);
+    res.status(406).json(e);
   }
 }
 

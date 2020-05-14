@@ -34,12 +34,14 @@ rentalSchema.pre('save', function(){
     break;
   case '1-borrowRequest':
     this.currentStatus = '2-borrowApproved';
+    // change item _custodyId to new person
     break;
   case '2-borrowApproved':
     this.currentStatus = '3-returnOffer';
     break;
   case '3-returnOffer':
     this.currentStatus = '4-returnAck';
+    // change item _custodyId to _owner
     break;
   case '4-returnAck':
     this.openRental = false;

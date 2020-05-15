@@ -26,7 +26,8 @@ class User extends model {
       return Promise.reject('This username has already been used, try other username!');
     } else {
       // if username is not registered, save the record. Hash the password before save the record
-      record.password = bcrypt.hashSync(record.password, 5);
+      const password = await bcrypt.hash(record.password, 5);
+      record.password = password;
       return this.create(record);
     }
   }
@@ -59,8 +60,7 @@ class User extends model {
     const validUsername = await this.schema.find({ userName, }).select('+password');
     if (validUsername.length) {
       // check if the password is valid
-      console.log(password, validUsername);
-      const isPasswordValid = bcrypt.compareSync(password, validUsername[0].password);
+      const isPasswordValid = await bcrypt.compare(password, validUsername[0].password);
       if (isPasswordValid) {
         return validUsername[0];
       } else {

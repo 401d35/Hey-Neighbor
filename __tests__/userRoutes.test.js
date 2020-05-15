@@ -1,9 +1,12 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 
 const app = require('../backend/lib/server.js').server;
 const supergoose = require('@code-fellows/supergoose');
 const mockRequest = supergoose(app);
 const faker = require('faker');
+
+let sampleUserName = null;
 
 describe('user routes', () => {
   it('can access test route', () => {
@@ -36,6 +39,7 @@ describe('user routes', () => {
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
+    sampleUserName = testUser1.userName;
     await mockRequest.post('/user').send(testUser1);
     return mockRequest.get('/user')
       .then(data => {
@@ -78,17 +82,55 @@ describe('user routes', () => {
     expect(testUser1.userName === ret1.body.userName).toEqual(true);
   });
 
+  // test for sign up route
+  it('save a user credential to DB upon signup and send a token back to client', () => {
+    const testUser1 = {
+      userName: 'test1',
+      password: 'test1',
+      email: faker.internet.email(),
+      address: faker.address.streetAddress(),
+    };
+
+    mockRequest.post('/signup').send(testUser1)
+      .then(data => {
+        expect(data.status).toEqual(201);
+        // expect to receive a toekn upon successful sign up
+        expect(typeof data.text).toEqual('string');
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  });
+
+  it('can get a user by userName', async () => {
+    let x = await mockRequest.get(`/user/name/${sampleUserName}`);
+    expect(x.body.userName).toEqual(sampleUserName);
+  });
 
 });
 
 describe('client error tests', () => {
-  it('will fail if user post does not contain all fields', () =>{
-    return mockRequest.post('/user')
-      .send()
-      .then( data => {
-        let record = data.body;
-        // expect(typeof record).toEqual('object');
-        expect(data.statusCode).toEqual(401);
+  it('will fail if user post does not contain all fields', async () =>{
+    let data = await mockRequest.post('/user').send();
+    expect(data.statusCode).toEqual(406);
+  });
+
+  it('should raise a error when try to use registered username to sign up', () => {
+    // username test1 is already registered above
+    const testUser1 = {
+      userName: 'test1',
+      password: 'test1',
+      email: faker.internet.password(),
+      address: faker.address.streetAddress(),
+    };
+
+    mockRequest.post('/signup').send(testUser1)
+      .then(data => {
+        expect(data.status).toEqual(400);
+      })
+      .catch(error => {
+        // console.log(error);
+        expect(error).toEqual('This username has already been used, try other username');
       });
   });
 });

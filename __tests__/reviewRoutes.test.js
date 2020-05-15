@@ -83,7 +83,6 @@ describe('review routes', () => {
 
   it('can get all reviews', async () => {
     let reviewPull = await mockRequest.get('/review');
-    // console.log(reviewPull.body);
     expect(reviewPull.body.length > 1).toEqual(true);
   });
 

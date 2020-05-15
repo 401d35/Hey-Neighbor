@@ -20,6 +20,36 @@ class Model {
     return this.schema.find(query);
   }
 
+  async resave(_id){
+    await this.schema.findById(_id, function(err, doc){
+      if(doc){
+        doc.save(function(){
+        });
+        return doc;
+      }
+    });
+    let y = await this.schema.findById(_id);
+    return y;
+  }
+
+  // update an item by _id ONLY if the owner is registered as having custody
+  async deactivateItem(_id){
+    let updatedFile = await this.schema.findOneAndUpdate({
+      '_id':_id,
+      $where:'this._owner.toString() === this._custodyId.toString()',
+    }, // the query
+    {'active':false,}, // what is updated
+    { new: true, },); // returns the updated doc
+
+
+    if(updatedFile === null){
+      throw 'Error: Item is checked out. Can not deactivate at this time.';
+    }else{
+      return updatedFile;
+    }
+  }
+
+
   // Read
   get(_id) {
     const queryObject = _id ? { _id, } : {};
@@ -34,6 +64,12 @@ class Model {
   // Delete
   delete(_id) {
     return this.schema.findByIdAndDelete(_id);
+  }
+
+  // get active users
+  getActive(){
+    const query = { active: true, };
+    return this.schema.find(query);
   }
 }
 

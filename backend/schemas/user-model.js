@@ -30,6 +30,7 @@ class User extends model {
       return this.create(record);
     }
   }
+
   // generate a token
   generateToken(validUser) {
     const userName = validUser.userName;
@@ -37,6 +38,20 @@ class User extends model {
     return token;
   }
 
+  // authenticate token
+  async authenticateToken(token) {
+    try {
+      const tokenObject = jwt.verify(token, process.env.SECRET);
+      const findUsername = await this.schema.find({ userName: tokenObject.userName });
+      if (findUsername.length) {
+        return Promise.resolve(tokenObject);
+      } else {
+        return Promise.reject('invalid login');
+      }
+    } catch (e) {
+      return Promise.reject();
+    }
+  }
 
   // authenticate Basic Auth
   async authenticateBasic(userName, password) {

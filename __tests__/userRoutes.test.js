@@ -8,9 +8,28 @@ const faker = require('faker');
 
 let sampleUserName = null;
 
+let token;
+
+let creds = {
+  'userName': 'test',
+  'password': 'password',
+  'address':'none',
+  'email':'mail',
+};
+
+beforeAll(async () => {
+  let resp = await mockRequest.post('/signup').send(creds);
+  token = resp.text;
+  console.log('my token', token);
+});
+
+// set('Authorization',`Bearer ${token}`).
+
+
+
 describe('user routes', () => {
   it('can access test route', () => {
-    return mockRequest.get('/test')
+    return mockRequest.get('/test').set('Authorization',`Bearer ${token}`)
       .then( results => {
         expect(results.body).toEqual({ message: 'pass!',});
       });
@@ -23,7 +42,7 @@ describe('user routes', () => {
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
-    return mockRequest.post('/user')
+    return mockRequest.post('/user').set('Authorization',`Bearer ${token}`)
       .send(testUser)
       .then( data => {
         let record = data.body;
@@ -40,11 +59,11 @@ describe('user routes', () => {
       address: faker.address.streetAddress(),
     };
     sampleUserName = testUser1.userName;
-    await mockRequest.post('/user').send(testUser1);
-    return mockRequest.get('/user')
+    await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send(testUser1);
+    return mockRequest.get('/user').set('Authorization',`Bearer ${token}`)
       .then(data => {
         let records = data.body;
-        expect(records.length).toEqual(2);
+        expect(records.length).toEqual(3);
         expect(data.status).toEqual(200);
       });
   });
@@ -56,8 +75,8 @@ describe('user routes', () => {
       email: faker.internet.email(),
       address: faker.address.streetAddress(),
     };
-    let val1 = await mockRequest.post('/user').send(testUser1);
-    return mockRequest.get(`/user/${val1.body._id}`)
+    let val1 = await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send(testUser1);
+    return mockRequest.get(`/user/${val1.body._id}`).set('Authorization',`Bearer ${token}`)
       .then( result => {
         expect(typeof result.body).toEqual('object');
         expect(result.body.userName).toEqual(testUser1.userName);
@@ -74,8 +93,8 @@ describe('user routes', () => {
     let testUser2 = {
       email: faker.internet.email(),
     };
-    let val1 = await mockRequest.post('/user').send(testUser1);
-    let ret1 = await mockRequest.put(`/user/${val1.body._id}`).send(testUser2);
+    let val1 = await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send(testUser1);
+    let ret1 = await mockRequest.put(`/user/${val1.body._id}`).set('Authorization',`Bearer ${token}`).send(testUser2);
 
     expect(testUser1.email === ret1.body.email).toEqual(false);
     expect(testUser2.email === ret1.body.email).toEqual(true);
@@ -91,7 +110,7 @@ describe('user routes', () => {
       address: faker.address.streetAddress(),
     };
 
-    mockRequest.post('/signup').send(testUser1)
+    mockRequest.post('/signup').set('Authorization',`Bearer ${token}`).send(testUser1)
       .then(data => {
         expect(data.status).toEqual(201);
         // expect to receive a toekn upon successful sign up
@@ -103,7 +122,7 @@ describe('user routes', () => {
   });
 
   it('can get a user by userName', async () => {
-    let x = await mockRequest.get(`/user/name/${sampleUserName}`);
+    let x = await mockRequest.get(`/user/name/${sampleUserName}`).set('Authorization',`Bearer ${token}`);
     expect(x.body.userName).toEqual(sampleUserName);
   });
 
@@ -111,7 +130,7 @@ describe('user routes', () => {
 
 describe('client error tests', () => {
   it('will fail if user post does not contain all fields', async () =>{
-    let data = await mockRequest.post('/user').send();
+    let data = await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send();
     expect(data.statusCode).toEqual(406);
   });
 
@@ -124,7 +143,7 @@ describe('client error tests', () => {
       address: faker.address.streetAddress(),
     };
 
-    mockRequest.post('/signup').send(testUser1)
+    mockRequest.post('/signup').set('Authorization',`Bearer ${token}`).send(testUser1)
       .then(data => {
         expect(data.status).toEqual(400);
       })

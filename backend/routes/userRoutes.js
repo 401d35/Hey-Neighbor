@@ -19,20 +19,19 @@ userRoutes.post('/oauth', (req, res) => {
   superagent.get(otherTokenEndpoint)
     .then(response => {
       const userName = response.body.email;
-      const token = users.generateToken({ userName });
+      const token = users.generateToken({ userName, });
       const newRecord = {
         userName: response.body.email,
         password: 'anything',
         email: response.body.email,
-        address: 'google'
+        address: 'google',
       };
       users.signup(newRecord);
       res.status(200).send(token);
     });
 });
 
-userRoutes.get('/user/name/:userName', async function (req, res) {
-  let userModel = new Model(userSchema);
+userRoutes.get('/user/name/:userName', bearerAuth, async function (req, res) {
   try {
     let dbUser = await userSchema.find({
       'userName': req.params.userName,
@@ -50,16 +49,16 @@ userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
 userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
-userRoutes.get('/user/:id', getUserById);
-userRoutes.post('/user', createUser);
-userRoutes.put('/user/:id', updateUser);
+userRoutes.get('/user/:id', bearerAuth,getUserById);
+userRoutes.post('/user', bearerAuth,createUser);
+userRoutes.put('/user/:id', bearerAuth,updateUser);
 // this one needs discussion. Probably shouldn't 'delete' but inactivate
 // then inactivate any items that are not loaned out
 // anything still loaned out should stay so.
 // on 'check-in' we can do a quick look to see if the owner is still active
 // and if they are not, inactivate the item
-userRoutes.delete('/user/:id', deactivateUser);
-userRoutes.get('/user/active', getAllActiveUsers);
+userRoutes.delete('/user/:id', bearerAuth, deactivateUser);
+userRoutes.get('/user/active', bearerAuth, getAllActiveUsers);
 
 
 userRoutes.get('/test', async(req,res)=>{

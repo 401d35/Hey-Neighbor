@@ -7,12 +7,15 @@ const itemRoutes = express.Router();
 const itemSchema = require ('../schemas/item-schema.js');
 const Model = require('../schemas/model.js');
 const ITEM = new Model(itemSchema);
+const bearerAuth = require('../auth/bearer-auth.js');
 
-itemRoutes.get('/item/:ITEMid', getITEM);
-itemRoutes.get('/item', getITEM);
-itemRoutes.post('/item', postITEM);
-itemRoutes.put('/item/:ITEMid', putITEM);
-itemRoutes.delete('/item/:ITEMid', deactivateITEM);
+
+itemRoutes.get('/item/:ITEMid',bearerAuth, getITEM);
+itemRoutes.get('/item',bearerAuth, getITEM);
+itemRoutes.post('/item',bearerAuth, postITEM);
+itemRoutes.put('/item/:ITEMid',bearerAuth, putITEM);
+itemRoutes.delete('/item/:ITEMid',bearerAuth, deactivateITEM);
+
 
 // get item or itemS
 function getITEM( req, res) {

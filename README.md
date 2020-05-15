@@ -49,8 +49,18 @@
   - `delete(_id)`: delete a record in the DB by _id and return deleted record
 
 ### Schemas
-
+- In the schema directory there are 5 individual schema's that create the dynamic shape of the Mongo database. 
+  - `item-schema`: Creates the form template for the {key : value} pairs for an item created by a user
+  - `user-schema` : Creates the form template for the {key : value} pairs for an user created by basic or Google OAuth.
+  - `review-schema` : Creates the form template for the {key : value} pairs for reviews created after a rental transaction.
+  - `region-schema` : Creates the form template for location {key : value} pairs associated with a given user in the database.
+  - `rental-schema` : Creates the form template for custody {key : value} pairs associated with a given item in the database.
 ### API Routes
+- In the route directory there 4 seperate route files responsible for connecting the application and its endpoints.
+  - `itemRoute.js` : Connects the components neccessary to perform CRUD operations for a given item in the database.
+  - `rentalRoute.js` : Connects the components *required* to perform CRUD operations by tracking when an item is rented and returned.
+  - `rewiewRoute.js` : Connects the components *required* to perform CRUD operations when a users leave reviews for each other after a rental transaction.
+  - `userRoute.js` : Connects all the necessary components *required* to perform CRUD operations for a user via Basic or Google OAuth 2.0.
 
 ### Tests
 

@@ -8,7 +8,7 @@ const superagent = require('superagent');
 const client_id = process.env.OAUTH_CLIENT_ID;
 const client_secret = process.env.OAUTH_CLIENT_SECRET;
 const tokenEndPoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-const remoteAPI = 'http://localhost:3000/oauth';
+const remoteAPI = 'http://hey-neighbor1.herokuapp.com/oauth';
 
 module.exports = async function googleOAuth(req, res, next) {
   try {

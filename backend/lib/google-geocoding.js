@@ -3,6 +3,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const app = express();
+const regionSchema = require('backend\schemas\region-schema.js');
 
 dotenv.config();
 
@@ -25,5 +26,7 @@ function initialize() {
 });
 }
 
+async function givesUserAddress () {
+  let userAddress = initialize
 
-
+}

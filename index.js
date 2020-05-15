@@ -6,13 +6,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const MONGODB_URL = process.env.MONGODB_URL;
+const MONGODB_URI = process.env.MONGODB_URI;
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
 
-mongoose.connect(MONGODB_URL, options);
+mongoose.connect(MONGODB_URI, options);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));

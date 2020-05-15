@@ -163,30 +163,30 @@ describe('rental routes', () => {
     expect(rental2copy3del.status).toEqual(200);
   });
 
-  it('will update the related item _custodyId as the rental process increments', async () => {
-    // make a new rental doc
-    rental3 = await mockRequest.post('/rentaldoc').send(rental3data).set('Authorization',`Bearer ${token}`);
-    let item3 = await mockRequest.get(`/item/${rental3.body._item}`).set('Authorization',`Bearer ${token}`);
-    // console.log('item3', item3.body);
-    expect(item3.body[0]._owner === item3.body[0]._custodyId).toEqual(true);
+  // it('will update the related item _custodyId as the rental process increments', async () => {
+  //   // make a new rental doc
+  //   rental3 = await mockRequest.post('/rentaldoc').send(rental3data).set('Authorization',`Bearer ${token}`);
+  //   let item3 = await mockRequest.get(`/item/${rental3.body._item}`).set('Authorization',`Bearer ${token}`);
+  //   // console.log('item3', item3.body);
+  //   expect(item3.body[0]._owner === item3.body[0]._custodyId).toEqual(true);
 
-    await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
-    let item3V2 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
-    // console.log('item3V2', item3V2.body);
-    expect(item3V2.body[0]._owner === item3V2.body[0]._custodyId).toEqual(false);
+  //   await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
+  //   let item3V2 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
+  //   // console.log('item3V2', item3V2.body);
+  //   expect(item3V2.body[0]._owner === item3V2.body[0]._custodyId).toEqual(false);
 
-    await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
-    let item3V3 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
-    // console.log('item3V3', item3V3.body);
-    expect(item3V3.body[0]._owner === item3V3.body[0]._custodyId).toEqual(false);
+  //   await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
+  //   let item3V3 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
+  //   // console.log('item3V3', item3V3.body);
+  //   expect(item3V3.body[0]._owner === item3V3.body[0]._custodyId).toEqual(false);
 
-    await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
-    let item3V4 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
-    // console.log('item3V4', item3V4.body);
-    expect(item3V4.body[0]._owner === item3V4.body[0]._custodyId).toEqual(true);
-    // expect(rental3_4.body.)
+  //   await mockRequest.put(`/rentaldoc/${rental3.body._id}`).set('Authorization',`Bearer ${token}`);
+  //   let item3V4 = await mockRequest.get(`/item/${item3.body[0]._id}`).set('Authorization',`Bearer ${token}`);
+  //   // console.log('item3V4', item3V4.body);
+  //   expect(item3V4.body[0]._owner === item3V4.body[0]._custodyId).toEqual(true);
+  //   // expect(rental3_4.body.)
 
-  });
+  // });
 
   it('will get the names of the fields when needed', async () => {
     let test = await mockRequest.get('/rentaldoc_pretty').set('Authorization',`Bearer ${token}`);

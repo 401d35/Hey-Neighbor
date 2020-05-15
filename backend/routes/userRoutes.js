@@ -9,8 +9,9 @@ const Model = require('../schemas/model.js');
 const users = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
+const bearerAuth = require('../auth/bearer-auth.js');
 
-const oauth = require('../auth/google-oauth/google-oauth.js');
+// const oauth = require('../auth/google-oauth/google-oauth.js');
 
 userRoutes.post('/oauth', (req, res) => {
   let token = req.body.id_token;
@@ -47,7 +48,7 @@ userRoutes.get('/user/name/:userName', async function (req, res) {
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
-userRoutes.get('/user', getAllUsers);
+userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
 userRoutes.get('/user/:id', getUserById);
 userRoutes.post('/user', createUser);

@@ -5,16 +5,16 @@ const express = require('express');
 const reviewRoutes = express.Router();
 const reviewSchema = require('../schemas/review-schema.js');
 const Model = require('../schemas/model.js');
-
+const bearerAuth = require('../auth/bearer-auth.js');
 
 // get all reviews and return to user
-reviewRoutes.get('/review', async (req,res) => {
+reviewRoutes.get('/review', bearerAuth, async (req,res) => {
   let reviewModel = new Model(reviewSchema);
   let results = await reviewModel.get();
   res.status(200).json(results);
 });
 
-reviewRoutes.get('/review/:id', async (req,res) =>{
+reviewRoutes.get('/review/:id', bearerAuth,async (req,res) =>{
   let reviewModel = new Model(reviewSchema);
   let results = await reviewModel.get(req.params.id);
   res.status(200).json(results);
@@ -22,14 +22,14 @@ reviewRoutes.get('/review/:id', async (req,res) =>{
 
 // this will find the review based on the subject and type of review
 // rather than by finding by the review ID
-reviewRoutes.get('/review/:subject_id/:type', async(req,res) => {
+reviewRoutes.get('/review/:subject_id/:type', bearerAuth,async(req,res) => {
   // let reviewModel = new Model(reviewSchema);
   let query = {$and:[{reviewSubject: req.params.subject_id, reviewType: req.params.type,}],};
   let results = await reviewSchema.find(query);
   res.status(200).json(results);
 });
 
-reviewRoutes.post('/review', async (req,res) =>{
+reviewRoutes.post('/review', bearerAuth,async (req,res) =>{
   let reviewModel = new Model(reviewSchema);
   try{
     let stored = await reviewModel.create(req.body);
@@ -39,7 +39,7 @@ reviewRoutes.post('/review', async (req,res) =>{
   }
 });
 
-reviewRoutes.put('/review/:id', async (req,res) => {
+reviewRoutes.put('/review/:id', bearerAuth,async (req,res) => {
   let reviewModel = new Model(reviewSchema);
   reviewModel.update(req.body)
     .then(results => {
@@ -50,7 +50,7 @@ reviewRoutes.put('/review/:id', async (req,res) => {
     });
 });
 
-reviewRoutes.delete('/review/:id', async (req,res) => {
+reviewRoutes.delete('/review/:id', bearerAuth, async (req,res) => {
   let reviewModel = new Model(reviewSchema);
   reviewModel.delete(req.params.id)
     .then(result => {

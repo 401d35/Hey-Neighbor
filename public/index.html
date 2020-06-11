@@ -1,84 +1,40 @@
-<html>
-  <head>
-    <meta name="google-site-verification" content="HogTnGLaXI1CjHo9IA2SnAYG5frbKKHZP18QFmIBwY8" />
-    <title>Hey Neighbor!</title>
-  </head>
-  <body>
+<html lang="en">
+
+<head>
+  <meta name="google-signin-scope" content="profile email">
+  <meta name="google-signin-client_id"
+    content="444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+
+<body>
+  <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
   <script>
-    var CLIENT_ID = '268314159139-k8voi8c5j6t6sbl1dk1j01gj4b14gjic.apps.googleusercontent.com';
-    var REDIRECT_URI = 'https://hey-neighbor1.herokuapp.com/oauth';
-    var fragmentString = location.hash.substring(1);
-  
-    // Parse query string to see if page request is coming from OAuth 2.0 server.
-    var params = {};
-    var regex = /([^&=]+)=([^&]*)/g, m;
-    while (m = regex.exec(fragmentString)) {
-      params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-    if (Object.keys(params).length > 0) {
-      localStorage.setItem('oauth2-test-params', JSON.stringify(params) );
-      if (params['state'] && params['state'] == 'try_sample_request') {
-        trySampleRequest();
-      }
-    }
-  
-    // If there's an access token, try an API request.
-    // Otherwise, start OAuth 2.0 flow.
-    function trySampleRequest() {
-      var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
-      if (params && params['access_token']) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET',
-            'https://www.googleapis.com/drive/v3/about?fields=user&' +
-            'access_token=' + params['access_token']);
-        xhr.onreadystatechange = function (e) {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log(xhr.response);
-          } else if (xhr.readyState === 4 && xhr.status === 401) {
-            // Token invalid, so prompt for user permission.
-            oauth2SignIn();
-          }
-        };
-        xhr.send(null);
-      } else {
-        oauth2SignIn();
-      }
-    }
-  
-    /*
-     * Create form to request access token from Google's OAuth 2.0 server.
-     */
-    function oauth2SignIn() {
-      // Google's OAuth 2.0 endpoint for requesting an access token
-      var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-  
-      // Create element to open OAuth 2.0 endpoint in new window.
-      var form = document.createElement('form');
-      form.setAttribute('method', 'GET'); // Send as a GET request.
-      form.setAttribute('action', oauth2Endpoint);
-  
-      // Parameters to pass to OAuth 2.0 endpoint.
-      var params = {'client_id': CLIENT_ID,
-                    'redirect_uri': REDIRECT_URI,
-                    'scope': 'https://www.googleapis.com/auth/drive.metadata.readonly',
-                    'state': 'try_sample_request',
-                    'include_granted_scopes': 'true',
-                    'response_type': 'token'};
-  
-      // Add form parameters as hidden input values.
-      for (var p in params) {
-        var input = document.createElement('input');
-        input.setAttribute('type', 'hidden');
-        input.setAttribute('name', p);
-        input.setAttribute('value', params[p]);
-        form.appendChild(input);
-      }
-  
-      // Add form to page and submit it to open the OAuth 2.0 endpoint.
-      document.body.appendChild(form);
-      form.submit();
+    function onSignIn(googleUser) {
+      // Useful data for your client-side scripts:
+      // var profile = googleUser.getBasicProfile();
+      // console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+      // console.log('Full Name: ' + profile.getName());
+      // console.log('Given Name: ' + profile.getGivenName());
+      // console.log('Family Name: ' + profile.getFamilyName());
+      // console.log("Image URL: " + profile.getImageUrl());
+      // console.log("Email: " + profile.getEmail());
+
+      // The ID token you need to pass to your backend:
+      var id_token = googleUser.getAuthResponse().id_token;
+      // console.log("ID Token: " + id_token);
+
+      return fetch('http://hey-neighbor1.herokuapp.com/oauth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id_token}),
+      }).then(res => {
+        
+      })
     }
   </script>
-  
-  <button onclick="trySampleRequest();">Try sample request</button>
-  </body></html>
+</body>
+
+</html>

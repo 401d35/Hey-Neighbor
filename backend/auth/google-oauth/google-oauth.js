@@ -1,5 +1,3 @@
-'use strict';
-
 require('dotenv').config();
 require('../../schemas/model');
 require('../../routes/userRoutes');

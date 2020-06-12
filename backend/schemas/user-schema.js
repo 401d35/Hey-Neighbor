@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema({
   address: {type: String, required: true,},
   region: {type: String, required: false,},
   active: {type: Boolean, default: true, required:false,},
+  avatar: {type:String, required:false,},
 });
 
 module.exports = mongoose.model('user', userSchema);

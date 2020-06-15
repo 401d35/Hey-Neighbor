@@ -1,18 +1,16 @@
-require('dotenv').config();
-require('../../schemas/model');
-require('../../routes/userRoutes');
-
-
-let access_token = '';
+const dotenv = require('dotenv');
+dotenv.config();
+const users = require('../../schemas/user-model.js');
 const superagent = require('superagent');
-const client_id = process.env.OAUTH_CLIENT_ID;
-const client_secret = process.env.OAUTH_CLIENT_SECRET;
-const tokenEndPoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-const remoteAPI = 'http://hey-neighbor1.herokuapp.com/oauth';
+const CLIENT_ID = process.env.OAUTH_CLIENT_ID;
+const CLIENT_SECRET = process.env.OAUTH_SECRET_ID;
+const TOKEN_END_POINT = process.env.TOKEN_END_POINT;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 module.exports = async function googleOAuth(req, res, next) {
   try {
-    let code = req.body.id_token;
+    let code = req.query.code;
     console.log('(1) CODE:', code);
     let remoteToken = await exchangeCodeForToken(code);
     console.log('(2) ACCESS TOKEN:', remoteToken);
@@ -24,41 +22,39 @@ module.exports = async function googleOAuth(req, res, next) {
     console.log('(4) LOCAL USER', user);
     next();
   } catch (e) {
-      next(`ERROR: ${e.message}`);
+    next(`ERROR: ${e.message}`);
+  }
+};
+
+async function exchangeCodeForToken(code) {
+  let query = {
+    code: code,
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
+    redirect_uri: REDIRECT_URI,
+    grant_type: 'authorization_code'
   };
 
-    async function exchangeCodeForToken(code) {
-        let query = {
-            code: code,
-            client_id: process.env.OAUTH_CLIENT_ID,
-            redirect_uri: 'http://localhost:3000/oauth',
-            response_type: 'token',
-            scope: 'https://www.googleapis.com/auth/userinfo.profile',
-            include_granted_scopes: 'true',
-            state: 'pass-through value',
-        };
-        try {
-            let token_response = await superagent.post(tokenEndPoint).send(query);
-            console.log(token_response);
-            // console.log('this is the access token*****************', token_response);
-        } catch (e) {
-            console.log('error', e);
-        }
-        // console.log('I am a token response', token_response);
+  const tokenResponse = await superagent.post(TOKEN_END_POINT).send(query);
+  const access_token = tokenResponse.body.access_token;
+  return access_token;
+}
 
-        return token_response;
-    }
-    async function getRemoteUserInfo(remoteToken) {
-        return user;
-    }
+async function getRemoteUserInfo(remoteToken) {
+  const userResponse = await superagent.get(`${VERIFY_TOKEN}${remoteToken}`)
+    .set('user-agent', 'express-app')
+    .set('Authorization', `token ${remoteToken}`);
+  return userResponse.body;
+}
 
-    async function getUser(remoteUser) {
-        let userRecord = {
-            username: remoteUser.login,
-            password: 'oauthpassword'
-        }
-        let user = await users.save(userRecord);
-        let token = users.generateToken(user);
-        return [user, token];
-    }
+async function getUser(remoteUser) {
+  let userRecord = {
+    userName: remoteUser.email,
+    password: 'oauthpassword',
+    email: remoteUser.email,
+    address: 'google'
+  };
+  let user = await users.saveRemoteUser(userRecord);
+  let token = users.generateToken(user);
+  return [user, token];
 }

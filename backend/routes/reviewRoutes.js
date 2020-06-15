@@ -22,7 +22,7 @@ reviewRoutes.get('/userReviews/:id', bearerAuth, async (req,res) => {
   }catch(e){
     res.status(500).json(e);
   }
-})
+});
 
 reviewRoutes.get('/itemReviews/:id', bearerAuth, async (req,res) => {
   let reviewModel = new Model(reviewSchema);
@@ -31,7 +31,8 @@ reviewRoutes.get('/itemReviews/:id', bearerAuth, async (req,res) => {
     res.status(200).json(results);
   }catch(e){
     res.status(500).json(e);
-})
+  }
+});
 
 
 reviewRoutes.get('/review/:id', bearerAuth,async (req,res) =>{

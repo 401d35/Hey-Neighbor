@@ -1,5 +1,3 @@
-// require('../../schemas/model');
-// require('../../routes/userRoutes');
 const dotenv = require('dotenv');
 dotenv.config();
 const users = require('../../schemas/user-model.js');

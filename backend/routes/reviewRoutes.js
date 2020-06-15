@@ -14,6 +14,26 @@ reviewRoutes.get('/review', bearerAuth, async (req,res) => {
   res.status(200).json(results);
 });
 
+reviewRoutes.get('/userReviews/:id', bearerAuth, async (req,res) => {
+  let reviewModel = new Model(reviewSchema);
+  try{
+    let results = await reviewModel.getReviewByUser(req.params.id,'user');
+    res.status(200).json(results);
+  }catch(e){
+    res.status(500).json(e);
+  }
+})
+
+reviewRoutes.get('/itemReviews/:id', bearerAuth, async (req,res) => {
+  let reviewModel = new Model(reviewSchema);
+  try{
+    let results = await reviewModel.getReviewByUser(req.params.id,'item');
+    res.status(200).json(results);
+  }catch(e){
+    res.status(500).json(e);
+})
+
+
 reviewRoutes.get('/review/:id', bearerAuth,async (req,res) =>{
   let reviewModel = new Model(reviewSchema);
   let results = await reviewModel.get(req.params.id);

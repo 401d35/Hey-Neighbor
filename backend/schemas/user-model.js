@@ -18,6 +18,17 @@ class User extends model {
 
   // Below are custom methods for user model
 
+  // save google user info in the database
+  async saveRemoteUser(record) {
+    const findUser = await this.schema.find({ userName: record.userName });
+    if (findUser.length) {
+      return findUser[0];
+    } else {
+      record.password = bcrypt.hashSync(record.password, 5);
+      return this.create(record);
+    }
+  }
+
   // signup method to save user info in the database
   async signup(record) {
     // check if the username is already used

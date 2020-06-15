@@ -28,17 +28,14 @@
 ![domain model UML](assets/Domain-model.jpeg)
 
 ### .env file setup
-* Create your own .env file in root folder
 * PORT=3000
-* MONGODB_URL=mongodb://localhost/hey-neighbor
+* MONGODB_URI=mongodb://localhost/hey-neighbor
+* SECRET=hey-neighbor
 * OAUTH_CLIENT_ID=444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com
 * OAUTH_SECRET_ID=M_xA5KS1W5S4B09Zdr7YmrVb
-* GOOGLE_APPLICATION_CREDENTIALS=../backend/Google Aouth/auth/client_secret_444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com.json
-
-- Create your own .env file in root folder
-  - PORT=3000
-  - MONGODB_URL=mongodb://localhost/hey-neighbor
-  - SECRET=JWTSECRETKEY
+* REDIRECT_URI=http://localhost:3000/oauth
+* TOKEN_END_POINT=https://www.googleapis.com/oauth2/v4/token
+* VERIFY_TOKEN=https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=
 
 ### Generic Model
 

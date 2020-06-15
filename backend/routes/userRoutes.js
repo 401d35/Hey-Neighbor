@@ -39,9 +39,9 @@ userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
 userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
-userRoutes.get('/user/:id', bearerAuth,getUserById);
-userRoutes.post('/user', bearerAuth,createUser);
-userRoutes.put('/user/:id', bearerAuth,updateUser);
+userRoutes.get('/user/:id', bearerAuth, getUserById);
+userRoutes.post('/user', bearerAuth, createUser);
+userRoutes.put('/user/:id', bearerAuth, updateUser);
 // this one needs discussion. Probably shouldn't 'delete' but inactivate
 // then inactivate any items that are not loaned out
 // anything still loaned out should stay so.
@@ -56,7 +56,7 @@ userRoutes.get('/test', async (req, res) => {
 });
 
 
-function getUserByName(req,res){
+function getUserByName(req, res) {
   console.log(req.user);
   let userModel = new Model(userSchema);
 
@@ -66,7 +66,7 @@ function getUserByName(req,res){
     })
     .catch(e => {
       res.status(500).send(e);
-    })
+    });
 }
 
 function handleSignin(req, res) {

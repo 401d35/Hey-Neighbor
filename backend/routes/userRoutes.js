@@ -9,6 +9,7 @@ const Model = require('../schemas/model.js');
 const users = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
+const bearerAuth = require('../auth/bearer-auth.js');
 
 const googleOAuth = require('../auth/google-oauth/google-oauth.js');
 
@@ -20,8 +21,7 @@ userRoutes.get('/oauth', googleOAuth, (req, res) => {
   }
 });
 
-userRoutes.get('/user/name/:userName', async function (req, res) {
-  let userModel = new Model(userSchema);
+userRoutes.get('/user/name/:userName', bearerAuth, async function (req, res) {
   try {
     let dbUser = await userSchema.find({
       'userName': req.params.userName,
@@ -37,23 +37,37 @@ userRoutes.get('/user/name/:userName', async function (req, res) {
 userRoutes.post('/signup', handleSignup); // sign up route
 userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // return a list of all users in the database
-userRoutes.get('/user', getAllUsers);
+userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
-userRoutes.get('/user/:id', getUserById);
-userRoutes.post('/user', createUser);
-userRoutes.put('/user/:id', updateUser);
+userRoutes.get('/user/:id', bearerAuth,getUserById);
+userRoutes.post('/user', bearerAuth,createUser);
+userRoutes.put('/user/:id', bearerAuth,updateUser);
 // this one needs discussion. Probably shouldn't 'delete' but inactivate
 // then inactivate any items that are not loaned out
 // anything still loaned out should stay so.
 // on 'check-in' we can do a quick look to see if the owner is still active
 // and if they are not, inactivate the item
-userRoutes.delete('/user/:id', deactivateUser);
-userRoutes.get('/user/active', getAllActiveUsers);
-
+userRoutes.delete('/user/:id', bearerAuth, deactivateUser);
+userRoutes.get('/user/active', bearerAuth, getAllActiveUsers);
+userRoutes.get('/userByName/:name', bearerAuth, getUserByName);
 
 userRoutes.get('/test', async (req, res) => {
   res.json({ message: 'pass!', });
 });
+
+
+function getUserByName(req,res){
+  console.log(req.user);
+  let userModel = new Model(userSchema);
+
+  userModel.getUserByName(req.user.userName)
+    .then(user => {
+      res.status(200).send(user);
+    })
+    .catch(e => {
+      res.status(500).send(e);
+    })
+}
 
 function handleSignin(req, res) {
   res.status(200).send(req.token);

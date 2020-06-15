@@ -16,6 +16,22 @@ let item1 = null;
 let item2 = null;
 let itemFull2 = null;
 
+let creds = {
+  'userName': 'test',
+  'password': 'password',
+  'address':'none',
+  'email':'mail',
+};
+
+let token;
+
+beforeAll(async () => {
+  let resp = await mockRequest.post('/signup').send(creds);
+  token = resp.text;
+  // console.log('my token', token);
+});
+
+// set('Authorization',`Bearer ${token}`).
 
 describe('item route affirmitive tests', () => {
 
@@ -33,8 +49,10 @@ describe('item route affirmitive tests', () => {
       address: faker.address.streetAddress(),
     };
 
-    itemOwner = await mockRequest.post('/user').send(testUser1);
-    itemBorrower = await mockRequest.post('/user').send(testUser2);
+
+
+    itemOwner = await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send(testUser1);
+    itemBorrower = await mockRequest.post('/user').set('Authorization',`Bearer ${token}`).send(testUser2);
 
     item1 = {
       _owner: itemOwner.body._id,
@@ -54,21 +72,22 @@ describe('item route affirmitive tests', () => {
   });
 
   it('can create an item "post /item"', async() =>{
-    let builtItem = await mockRequest.post('/item').send(item1);
+    let builtItem = await mockRequest.post('/item').set('Authorization',`Bearer ${token}`).send(item1);
     firstItemId = builtItem.body._id;
+    // console.log(builtItem.body);
     expect(builtItem.body._id).toBeTruthy();
     expect(builtItem.status).toEqual(201);
   });
 
   it('can get items from the db "get /item"', async () => {
-    itemFull2 = await mockRequest.post('/item').send(item2);
-    let returns = await mockRequest.get('/item');
+    itemFull2 = await mockRequest.post('/item').set('Authorization',`Bearer ${token}`).send(item2);
+    let returns = await mockRequest.get('/item').set('Authorization',`Bearer ${token}`);
     expect(returns.status).toEqual(200);
     expect(returns.body.length > 1).toEqual(true);
   });
 
   it('can get one item by id "get /item/_id"', async () => {
-    let oneItem = await mockRequest.get(`/item/${firstItemId}`);
+    let oneItem = await mockRequest.get(`/item/${firstItemId}`).set('Authorization',`Bearer ${token}`);
     expect(oneItem.body.length).toEqual(1);
     expect(oneItem.body[0].item).toEqual(item1.item);
   });
@@ -79,13 +98,13 @@ describe('item route affirmitive tests', () => {
       description: description,
     };
 
-    let updatedItem = await mockRequest.put(`/item/${firstItemId}`).send(update);
+    let updatedItem = await mockRequest.put(`/item/${firstItemId}`).set('Authorization',`Bearer ${token}`).send(update);
     expect(updatedItem.body.description).not.toEqual(item1.description);
     expect(updatedItem.body.description).toEqual(description);
   });
 
   it('can deactiave an item "delete /item/_id', async () => {
-    let deactive = await mockRequest.delete(`/item/${firstItemId}`);
+    let deactive = await mockRequest.delete(`/item/${firstItemId}`).set('Authorization',`Bearer ${token}`);
     expect(deactive.body.active).toEqual(false);
     expect(deactive.body._id).toEqual(firstItemId);
   });
@@ -94,8 +113,8 @@ describe('item route affirmitive tests', () => {
     let update = {
       _custodyId: mongoose.Types.ObjectId(itemBorrower.body._id.toString()),
     };
-    await mockRequest.put(`/item/${itemFull2.body._id}`).send(update);
-    let deactive = await mockRequest.delete(`/item/${itemFull2.body._id}`);
+    await mockRequest.put(`/item/${itemFull2.body._id}`).set('Authorization',`Bearer ${token}`).send(update);
+    let deactive = await mockRequest.delete(`/item/${itemFull2.body._id}`).set('Authorization',`Bearer ${token}`);
     expect(deactive.text).toEqual('Error: Item is checked out. Can not deactivate at this time.');
   });
 });

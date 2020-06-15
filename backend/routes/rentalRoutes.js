@@ -8,13 +8,15 @@ const rentalSchema = require('../schemas/rental-schema.js');
 const Model = require('../schemas/model.js');
 const itemSchema = require('../schemas/item-schema.js');
 const giveMeAStory = require('../lib/giveMeAStory.js');
+const bearerAuth = require('../auth/bearer-auth.js');
 
-rentalRoutes.get('/rentaldoc', getRentalDocs);
-rentalRoutes.get('/rentaldoc/:_id',getRentalDocs);
-rentalRoutes.post('/rentaldoc', createRentalDoc);
-rentalRoutes.put('/rentaldoc/:_id', incrementRentalProcess);
-rentalRoutes.delete('/rentaldoc/:_id', deactivateRentalDoc);
-rentalRoutes.get('/rentaldoc_pretty', getPrettyRecords);
+
+rentalRoutes.get('/rentaldoc', bearerAuth, getRentalDocs);
+rentalRoutes.get('/rentaldoc/:_id', bearerAuth, getRentalDocs);
+rentalRoutes.post('/rentaldoc', bearerAuth, createRentalDoc);
+rentalRoutes.put('/rentaldoc/:_id', bearerAuth, incrementRentalProcess);
+rentalRoutes.delete('/rentaldoc/:_id', bearerAuth, deactivateRentalDoc);
+rentalRoutes.get('/rentaldoc_pretty', bearerAuth, getPrettyRecords);
 
 
 
@@ -44,7 +46,7 @@ async function getPrettyRecords(req,res){
   }catch(e){
     res.status(400).json(e);
   }
-  
+
 }
 
 // create a rental doc
@@ -66,16 +68,17 @@ async function incrementRentalProcess(req,res){
     let rentalModel = new Model(rentalSchema);
     let updatedRental = await rentalModel.resave(req.params._id);
     let itemModel = new Model(itemSchema);
-    let updatedItem = null;
+    // eslint-disable-next-line no-unused-vars
+    let updatedItem;
     if(updatedRental.currentStatus.charAt(0) === '2'){
       updatedItem = await itemModel.update(
         {'_id':updatedRental._item,},
-        {'_custodyId':updatedRental._borrower,}, 
+        {'_custodyId':updatedRental._borrower,},
         {new:true,});
     }else if(updatedRental.currentStatus.charAt(0) === '4'){
       updatedItem = await itemModel.update(
         {'_id':updatedRental._item,},
-        {'_custodyId':updatedRental._owner,}, 
+        {'_custodyId':updatedRental._owner,},
         {new:true,});
     }
     res.status(200).json(updatedRental);

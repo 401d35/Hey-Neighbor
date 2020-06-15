@@ -15,7 +15,19 @@ itemRoutes.get('/item',bearerAuth, getITEM);
 itemRoutes.post('/item',bearerAuth, postITEM);
 itemRoutes.put('/item/:ITEMid',bearerAuth, putITEM);
 itemRoutes.delete('/item/:ITEMid',bearerAuth, deactivateITEM);
+itemRoutes.get('/itemByOwner/:OWNERid', bearerAuth, getOwnerItems); // I need to query all items by a owner id
 
+
+
+function getOwnerItems(req, res) {
+  ITEM.getOwnerItems(req.params.OWNERid)
+    .then(data => {
+      res.status(200).json(data);
+    })
+    .catch(e => {
+      res.status(401).json(e);
+    });
+}
 
 // get item or itemS
 function getITEM( req, res) {

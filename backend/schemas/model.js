@@ -49,6 +49,23 @@ class Model {
     }
   }
 
+  getTargetReviews(id, type){
+    const queryObject = {_id:id, reviewType:type}
+    return this.schema.find(queryObject);
+  }
+
+  getUserByName(name){
+    console.log('name', name);
+    const queryObject = {'userName':name};
+    // let x = 
+    // console.log('x', x);
+    return this.schema.find({'userName':name});
+  }
+
+  getOwnerItems(_id){
+    const queryObject = {_owner: _id};
+    return this.schema.find(queryObject);
+  }
 
   // Read
   get(_id) {

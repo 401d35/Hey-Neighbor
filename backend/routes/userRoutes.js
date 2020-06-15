@@ -59,11 +59,25 @@ userRoutes.put('/user/:id', bearerAuth,updateUser);
 // and if they are not, inactivate the item
 userRoutes.delete('/user/:id', bearerAuth, deactivateUser);
 userRoutes.get('/user/active', bearerAuth, getAllActiveUsers);
-
+userRoutes.get('/userByName/:name', bearerAuth, getUserByName);
 
 userRoutes.get('/test', async(req,res)=>{
   res.json({message: 'pass!',});
 });
+
+
+function getUserByName(req,res){
+  console.log(req.user);
+  let userModel = new Model(userSchema);
+
+  userModel.getUserByName(req.user.userName)
+    .then(user => {
+      res.status(200).send(user);
+    })
+    .catch(e => {
+      res.status(500).send(e);
+    })
+}
 
 function handleSignin(req, res) {
   res.status(200).send(req.token);

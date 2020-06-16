@@ -15,7 +15,8 @@ const googleOAuth = require('../auth/google-oauth/google-oauth.js');
 
 userRoutes.get('/oauth', googleOAuth, (req, res) => {
   try {
-    res.status(200).send(req.token);
+    res.cookie('token', req.token);
+    res.status(200).redirect('http://localhost:3001');
   } catch (e) {
     res.status(400).json(e);
   }
@@ -51,7 +52,7 @@ userRoutes.delete('/user/:id', bearerAuth, deactivateUser);
 userRoutes.get('/user/active', bearerAuth, getAllActiveUsers);
 userRoutes.get('/getMyUser', bearerAuth, getMyUser);
 
-function getMyUser(req,res){
+function getMyUser(req, res) {
   console.log(req.user.userName)
   let userModel = new Model(userSchema);
 
@@ -64,8 +65,8 @@ function getMyUser(req,res){
     });
 }
 
-userRoutes.get('/test', async(req,res)=>{
-  res.json({message: 'pass!',});
+userRoutes.get('/test', async (req, res) => {
+  res.json({ message: 'pass!', });
 });
 
 

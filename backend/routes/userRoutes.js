@@ -6,7 +6,7 @@ const userRoutes = express.Router();
 const superagent = require('superagent');
 const userSchema = require('../schemas/user-schema.js');
 const Model = require('../schemas/model.js');
-const users = require('../schemas/user-model.js');
+const User = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
 const bearerAuth = require('../auth/bearer-auth.js');
@@ -19,14 +19,14 @@ userRoutes.post('/oauth', (req, res) => {
   superagent.get(otherTokenEndpoint)
     .then(response => {
       const userName = response.body.email;
-      const token = users.generateToken({ userName, });
+      const token = User.generateToken({ userName, });
       const newRecord = {
         userName: response.body.email,
         password: 'anything',
         email: response.body.email,
         address: 'google',
       };
-      users.signup(newRecord);
+      User.signup(newRecord);
       res.status(200).send(token);
     });
 });
@@ -45,7 +45,8 @@ userRoutes.get('/user/name/:userName', bearerAuth, async function (req, res) {
 });
 
 userRoutes.post('/signup', handleSignup); // sign up route
-userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
+userRoutes.post('/signin', handleSignin); // sign in route
+// 
 // return a list of all users in the database
 userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
@@ -65,7 +66,6 @@ userRoutes.get('/test', async(req,res)=>{
   res.json({message: 'pass!',});
 });
 
-
 function getUserByName(req,res){
   console.log(req.user);
   let userModel = new Model(userSchema);
@@ -79,16 +79,28 @@ function getUserByName(req,res){
     })
 }
 
-function handleSignin(req, res) {
-  res.status(200).send(req.token);
+function handleSignin(req, res, next) {
+  /**
+   * const {userName, password} = req.body;
+   * User.authenticateBasic(userName, password)
+   */
+
+  User.authenticateBasic(req.body.userName, req.body.password)
+  .then(validUser => {
+    // generate token and send it to user
+    const token = User.generateToken(validUser);
+    req.token = token;
+    res.status(200).send(req.token);
+  })
+  .catch(error => next(error));
 }
 
 
 function handleSignup(req, res) {
-  users.signup(req.body)
+  User.signup(req.body)
     .then(created => {
       // generate token and send it back to user
-      const token = users.generateToken(created);
+      const token = User.generateToken(created);
       res.status(201).send(token);
     })
     .catch(error => {
@@ -108,7 +120,7 @@ async function getAllActiveUsers(req, res){
 
 
 async function getAllUsers(req, res) {
-  const userList = await users.get();
+  const userList = await User.get();
 
   userList.forEach( user => {
     delete user.password;
@@ -117,7 +129,7 @@ async function getAllUsers(req, res) {
 }
 
 async function getUserById(req, res) {
-  users.get(req.params.id)
+  User.get(req.params.id)
     .then(dbUser => {
       res.status(200).json(dbUser[0]);
     })
@@ -128,7 +140,7 @@ async function getUserById(req, res) {
 
 async function createUser(req, res){
   try{
-    let stored = await users.create(req.body);
+    let stored = await User.create(req.body);
     stored = stored.toObject(); // to delete parameters off of a return, must cast `toObject()` to use `delete`
     delete stored.password;
     res.status(201).json(stored);
@@ -139,12 +151,12 @@ async function createUser(req, res){
 
 async function updateUser(req, res) {
   // req.body will never contain password property
-  const updatedUser = await users.update(req.params.id, req.body);
+  const updatedUser = await User.update(req.params.id, req.body);
   res.status(200).json(updatedUser);
 }
 
 async function deactivateUser(req, res) {
-  users.update(req.params.id, {'active':false,});
+  User.update(req.params.id, {'active':false,});
   let itemModel = new Model(itemSchema);
   itemModel.find({'_custodyId':req.params.id,'owner':req.params.id,}).populate({path:'_owner', select:'_id',})
     .populate({path:'_custodyId', select:'_id',});

@@ -13,6 +13,17 @@ const rentalSchema = new Schema({
   openRental:{type:Boolean, default:true,},
   archived:{type: Boolean, default:false,},
 });
+// const rentalSchema = new Schema({
+//   _owner:{type: mongoose.Schema.Types.ObjectId, ref:'user',required:true,},
+//   _borrower: {type: mongoose.Schema.Types.ObjectId, ref:'user',required:true,},
+//   _item: {type: mongoose.Schema.Types.ObjectId, ref:'item',required:true,},
+//   currentStatus: {type:String, default:null,},
+//   openRental:{type:Boolean, default:true,},
+//   archived:{type: Boolean, default:false,},
+//   createdAt: {type: Date},
+//   updatedAt: {type: Date}
+// }, {timestamps: true});
+// {timestamps:true} create 2 fields "createdAt", "updatedAt"
 
 // currentStatus is a progressivly updating field
 // 1-borrowRequest -> intended borrower asks for the item
@@ -21,7 +32,7 @@ const rentalSchema = new Schema({
 // 4-returnAck -> owner has received the item in to their posession
 // each stage will not to be processed in sequence via
 
-rentalSchema.pre('save', function(){
+rentalSchema.pre('save', function(next){
   this.lastUpdate = new Date(Date.now());
 
   if(this.initiatedDate === null){
@@ -47,7 +58,7 @@ rentalSchema.pre('save', function(){
   default:
     break;
   }
-
+  next();
 });
 
 

@@ -10,13 +10,14 @@ const users = require('../schemas/user-model.js');
 const basicAuth = require('../auth/basic-auth.js');
 const itemSchema = require('../schemas/item-schema.js'); // can get rid of this later
 const bearerAuth = require('../auth/bearer-auth.js');
-
 const googleOAuth = require('../auth/google-oauth/google-oauth.js');
+require('dotenv').config();
+
 
 userRoutes.get('/oauth', googleOAuth, (req, res) => {
   try {
     res.cookie('token', req.token);
-    res.status(200).redirect('http://localhost:3001/loggedin');
+    res.status(200).redirect(process.env.LOGIN_REDIRECT);
   } catch (e) {
     res.status(400).json(e);
   }

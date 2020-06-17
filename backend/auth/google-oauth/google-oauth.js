@@ -34,8 +34,9 @@ async function exchangeCodeForToken(code) {
     redirect_uri: REDIRECT_URI,
     grant_type: 'authorization_code'
   };
-
+  console.log('endToken', TOKEN_END_POINT, query);
   const tokenResponse = await superagent.post(TOKEN_END_POINT).send(query);
+  console.log('am i alive?');
   const access_token = tokenResponse.body.access_token;
   return access_token;
 }

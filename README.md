@@ -28,25 +28,23 @@
 ![domain model UML](assets/Domain-model.jpeg)
 
 ### .env file setup
-* Create your own .env file in root folder
-* PORT=3000
-* MONGODB_URL=mongodb://localhost/hey-neighbor
-* OAUTH_CLIENT_ID=444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com
-* OAUTH_SECRET_ID=M_xA5KS1W5S4B09Zdr7YmrVb
-* GOOGLE_APPLICATION_CREDENTIALS=../backend/Google Aouth/auth/client_secret_444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com.json
 
-- Create your own .env file in root folder
-  - PORT=3000
-  - MONGODB_URL=mongodb://localhost/hey-neighbor
-  - SECRET=JWTSECRETKEY
+- PORT=3000
+- MONGODB_URI=mongodb://localhost/hey-neighbor
+- SECRET=hey-neighbor
+- OAUTH_CLIENT_ID=444667393820-6rpjjjaepv6lu63oecpe61e6698bd01s.apps.googleusercontent.com
+- OAUTH_SECRET_ID=M_xA5KS1W5S4B09Zdr7YmrVb
+- REDIRECT_URI=http://localhost:3000/oauth
+- TOKEN_END_POINT=https://www.googleapis.com/oauth2/v4/token
+- VERIFY_TOKEN=https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=
 
 ### Generic Model
 
 - This generic model supports basic mongoDB CRUD operations. This is for creating dynamic model later.
   - `create(record)`: create a record in the DB and return it
   - `get(_id)`: return a record by `_id` from the DB; if `_id` is not given, it will return all the records from the DB
-  - `update(_id, record)`: update a record in the DB by _id and return updated record
-  - `delete(_id)`: delete a record in the DB by _id and return deleted record
+  - `update(_id, record)`: update a record in the DB by \_id and return updated record
+  - `delete(_id)`: delete a record in the DB by \_id and return deleted record
 
 ### Schemas
 

@@ -4,16 +4,14 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const authRoutes = express.Router();
 
-const bearerAuth = require('../auth/bearer-auth.js');
 
 
-authRoutes.get('/item/:ITEMid',bearerAuth, getITEM);
-
+authRoutes.get('/oauth', auth2);
 
 
 // get item or itemS
-function getITEM( req, res) {
-  res.status(200).send(req.token);
+function auth2( req, res) {
+  console.log('lool',req.query);
 }
 
 

@@ -16,7 +16,7 @@ const googleOAuth = require('../auth/google-oauth/google-oauth.js');
 userRoutes.get('/oauth', googleOAuth, (req, res) => {
   try {
     res.cookie('token', req.token);
-    res.status(200).redirect('http://localhost:3001');
+    res.status(200).redirect('http://localhost:3001/loggedin');
   } catch (e) {
     res.status(400).json(e);
   }
@@ -58,7 +58,7 @@ function getMyUser(req, res) {
 
   userModel.getUserByName(req.user.userName)
     .then(user => {
-      res.status(200).send(user);
+      res.status(200).send(user[0]);
     })
     .catch(e => {
       res.status(500).send(e);

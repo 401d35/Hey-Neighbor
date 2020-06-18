@@ -50,6 +50,7 @@ class User extends model {
    * }
    */
   generateToken(validUser) {
+    console.log('neet', validUser);
     const userName = validUser.userName;
     const token = jwt.sign({ userName, }, process.env.SECRET, {expiresIn: "7d"});
     return token;
@@ -73,23 +74,13 @@ class User extends model {
   // authenticate Basic Auth
   async authenticateBasic(userName, password) {
     // check if username is valid
+    console.log('userName', userName);
     const users = await this.schema.find({ userName }).select("+password");
-    /**
-     * users = [
-     * {
-     * active: true,
-     * _id: 5ee98661cdcf2a308cbc2be3,
-     * userName: 'Alex99',
-     * address: '11233 hbsvcjhberwjh',
-     * password: "AHSIEFHAW#EIFHDf2342314@#$!%!@#RfsdaJFGSAO",
-     * email: 'sdfw@vjghvj.com',
-     * __v: 0
-     * }
-     * ]
-     */
+    console.log('authB', users);
     if (users.length) {
       // check if the password is valid
       const isPasswordValid = await bcrypt.compare(password, users[0].password);
+      console.log('valid pass?', isPasswordValid);
       if (isPasswordValid) {
         return users[0];
       } else {

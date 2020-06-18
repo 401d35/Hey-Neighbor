@@ -37,7 +37,7 @@ userRoutes.get('/user/name/:userName', bearerAuth, async function (req, res) {
 });
 
 userRoutes.post('/signup', handleSignup); // sign up route
-userRoutes.post('/signin', bearerAuth, handleSignin); // sign in route
+userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
 // 
 // return a list of all users in the database
 userRoutes.get('/user', bearerAuth, getAllUsers);

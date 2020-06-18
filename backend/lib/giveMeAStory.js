@@ -7,22 +7,24 @@ function giveMeAStory(recordSummaries){
 
   let sendThisBack = [];
   recordSummaries.forEach( record => {
-
+    let text;
     if(record.currentStatus.charAt(0) === '1'){
-      sendThisBack.push(`${record.borrower} wants to borrow ${record.item} from ${record.owner}`);
+      text = `${record.borrower} wants to borrow ${record.item} from ${record.owner}`;
     }
     else if(record.currentStatus.charAt(0) === '2'){
-      sendThisBack.push(`${record.borrower} has checked out ${record.item} from ${record.owner}`);
+      text = `${record.borrower} has checked out ${record.item} from ${record.owner}`;
     }
     else if(record.currentStatus.charAt(0) === '3'){
-      sendThisBack.push(`${record.borrower} has returned ${record.item} to ${record.owner}`);
+      text = `${record.borrower} has returned ${record.item} to ${record.owner}`;
     }
     else if(record.currentStatus.charAt(0) === '4'){
-      sendThisBack.push(`${record.borrower} no longer responsible for ${record.item} of ${record.owner}`);
+      text = `${record.borrower} no longer responsible for ${record.item} of ${record.owner}`;
     }
     else{
-      sendThisBack.push(`Issue with record ${record._id}`);
+      text = `Issue with record ${record._id}`;
     }
+    let obj = {'text':text, 'rental_id':record._id, 'status':record.currentStatus}
+    sendThisBack.push(obj);
   });
   return sendThisBack;
 }

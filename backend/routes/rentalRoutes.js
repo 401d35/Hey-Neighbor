@@ -18,10 +18,36 @@ rentalRoutes.put('/rentaldoc/:_id', bearerAuth, incrementRentalProcess);
 rentalRoutes.delete('/rentaldoc/:_id', bearerAuth, deactivateRentalDoc);
 rentalRoutes.get('/rentaldoc_pretty', bearerAuth, getPrettyRecords);
 rentalRoutes.get('/myLentItems/:_id', bearerAuth, myLentItems)
+rentalRoutes.get('/borrowingItems/:_id', bearerAuth, borrowingItems);
 
 async function myLentItems(req,res){
   try{
     let records = await rentalSchema.find({_owner:req.params._id})
+      .populate('_owner','userName')
+      .populate('_borrower', 'userName')
+      .populate('_item', 'item');
+      let recordsSummary = [];
+      records.forEach(rentalDoc => {
+        let obj = {};
+        obj._id = rentalDoc._id;
+        obj.owner = rentalDoc._owner.userName;
+        obj.borrower = rentalDoc._borrower.userName;
+        obj.item = rentalDoc._item.item;
+        obj.currentStatus = rentalDoc.currentStatus;
+        recordsSummary.push(obj);
+      });
+  
+      let prettyResponse = giveMeAStory(recordsSummary);
+  
+      res.status(200).json(prettyResponse);
+    }catch(e){
+      res.status(400).json(e);
+    }
+}
+
+async function borrowingItems(req,res){
+  try{
+    let records = await rentalSchema.find({_borrower:req.params._id})
       .populate('_owner','userName')
       .populate('_borrower', 'userName')
       .populate('_item', 'item');

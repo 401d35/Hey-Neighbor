@@ -11,7 +11,7 @@ const bearerAuth = require('../auth/bearer-auth.js');
 
 
 itemRoutes.get('/item/:ITEMid',bearerAuth, getITEM);
-itemRoutes.get('/item',bearerAuth, getITEM);
+itemRoutes.get('/item',getITEM);
 itemRoutes.post('/item',bearerAuth, postITEM);
 itemRoutes.put('/item/:ITEMid',bearerAuth, putITEM);
 itemRoutes.delete('/item/:ITEMid',bearerAuth, deactivateITEM);

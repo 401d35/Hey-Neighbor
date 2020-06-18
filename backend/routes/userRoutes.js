@@ -37,7 +37,8 @@ userRoutes.get('/user/name/:userName', bearerAuth, async function (req, res) {
 });
 
 userRoutes.post('/signup', handleSignup); // sign up route
-userRoutes.post('/signin', basicAuth, handleSignin); // sign in route
+userRoutes.post('/signin', handleSignin); // sign in route
+// 
 // return a list of all users in the database
 userRoutes.get('/user', bearerAuth, getAllUsers);
 // return only the single user, no password
@@ -66,13 +67,20 @@ function getMyUser(req, res) {
     });
 }
 
-userRoutes.get('/test', async (req, res) => {
-  res.json({ message: 'pass!', });
-});
+function handleSignin(req, res, next) {
+  /**
+   * const {userName, password} = req.body;
+   * users.authenticateBasic(userName, password)
+   */
 
-
-function handleSignin(req, res) {
-  res.status(200).send(req.token);
+  users.authenticateBasic(req.body.userName, req.body.password)
+    .then(validUser => {
+      // generate token and send it to user
+      const token = users.generateToken(validUser);
+      req.token = token;
+      res.status(200).send(req.token);
+    })
+    .catch(error => next(error));
 }
 
 
@@ -136,10 +144,21 @@ async function updateUser(req, res) {
 }
 
 async function deactivateUser(req, res) {
-  users.update(req.params.id, { 'active': false, });
+  users.update(req.params.id, {
+    'active': false,
+  });
   let itemModel = new Model(itemSchema);
-  itemModel.find({ '_custodyId': req.params.id, 'owner': req.params.id, }).populate({ path: '_owner', select: '_id', })
-    .populate({ path: '_custodyId', select: '_id', });
+  itemModel.find({
+      '_custodyId': req.params.id,
+      'owner': req.params.id,
+    }).populate({
+      path: '_owner',
+      select: '_id',
+    })
+    .populate({
+      path: '_custodyId',
+      select: '_id',
+    });
   // send some message back
   res.send('Your account is successfully deactivated!');
 }

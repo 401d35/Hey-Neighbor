@@ -68,19 +68,7 @@ function getMyUser(req, res) {
 }
 
 function handleSignin(req, res, next) {
-  /**
-   * const {userName, password} = req.body;
-   * users.authenticateBasic(userName, password)
-   */
-
-  users.authenticateBasic(req.body.userName, req.body.password)
-    .then(validUser => {
-      // generate token and send it to user
-      const token = users.generateToken(validUser);
-      req.token = token;
-      res.status(200).send(req.token);
-    })
-    .catch(error => next(error));
+  res.status(200).send(req.token);
 }
 
 

@@ -11,12 +11,44 @@ const bearerAuth = require('../auth/bearer-auth.js');
 
 
 itemRoutes.get('/item/:ITEMid',bearerAuth, getITEM);
-itemRoutes.get('/item', getITEM);
+itemRoutes.get('/item', getItemBonus);
+// itemRoutes.get('/itemBonus', getItemBonus);
 itemRoutes.get('/itemByOwner/:OWNERid', bearerAuth, getOwnerItems); // I need to query all items by a owner id
 itemRoutes.post('/item',bearerAuth, postITEM);
 itemRoutes.put('/item/:ITEMid',bearerAuth, putITEM);
 itemRoutes.delete('/item/:ITEMid',bearerAuth, deactivateITEM);
 
+
+async function getItemBonus(req,res){
+  try{
+    let items = await itemSchema.find({})
+      .populate('_owner', 'userName')
+
+    let betterItems = [];
+
+    items.forEach(val => {
+      let temp = {};
+      console.log(val);
+      temp.active = val.active;
+      temp._id = val._id;
+      temp._owner = val._owner._id;
+      temp.userName = val._owner.userName;
+      temp.subCategory = val.subCategory;
+      temp.description = val.description;
+      temp._custodyId = val._custodyId;
+      temp.item = val.item;
+      temp.type = val.type;
+      temp.image = val.image ? val.image : "";
+      
+      betterItems.push(temp);
+    })
+
+    // console.log(betterItems);
+    res.status(200).json(betterItems);
+  }catch(e){
+    res.status(400).json(e);
+  }
+}
 
 function getOwnerItems(req, res) {
   console.log("I arrived!!!!!!!!!!!!")

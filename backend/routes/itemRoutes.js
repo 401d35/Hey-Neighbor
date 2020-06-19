@@ -11,15 +11,15 @@ const bearerAuth = require('../auth/bearer-auth.js');
 
 
 itemRoutes.get('/item/:ITEMid',bearerAuth, getITEM);
-itemRoutes.get('/item',bearerAuth, getITEM);
+itemRoutes.get('/item', getITEM);
+itemRoutes.get('/itemByOwner/:OWNERid', bearerAuth, getOwnerItems); // I need to query all items by a owner id
 itemRoutes.post('/item',bearerAuth, postITEM);
 itemRoutes.put('/item/:ITEMid',bearerAuth, putITEM);
 itemRoutes.delete('/item/:ITEMid',bearerAuth, deactivateITEM);
-itemRoutes.get('/itemByOwner/:OWNERid', bearerAuth, getOwnerItems); // I need to query all items by a owner id
-
 
 
 function getOwnerItems(req, res) {
+  console.log("I arrived!!!!!!!!!!!!")
   ITEM.getOwnerItems(req.params.OWNERid)
     .then(data => {
       res.status(200).json(data);

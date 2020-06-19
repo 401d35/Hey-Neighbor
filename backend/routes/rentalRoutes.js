@@ -18,6 +18,7 @@ rentalRoutes.put('/rentaldoc/:_id', bearerAuth, incrementRentalProcess);
 rentalRoutes.delete('/rentaldoc/:_id', bearerAuth, deactivateRentalDoc);
 rentalRoutes.get('/rentaldoc_pretty', bearerAuth, getPrettyRecords);
 rentalRoutes.get('/myLentItems/:_id', bearerAuth, myLentItems)
+rentalRoutes.get('/myBorrowedItems/:_id', bearerAuth, borrowingItems);
 
 async function myLentItems(req,res){
   try{
@@ -27,12 +28,53 @@ async function myLentItems(req,res){
       .populate('_item', 'item');
       let recordsSummary = [];
       records.forEach(rentalDoc => {
+        console.log('rentaldoc', rentalDoc._owner);
         let obj = {};
         obj._id = rentalDoc._id;
         obj.owner = rentalDoc._owner.userName;
+        obj.owner_id = rentalDoc._owner._id;
         obj.borrower = rentalDoc._borrower.userName;
+        obj.borrower_id = rentalDoc._borrower._id;
         obj.item = rentalDoc._item.item;
         obj.currentStatus = rentalDoc.currentStatus;
+        obj.archived = rentalDoc.archived;
+        obj.openRental = rentalDoc.openRental;
+        obj.lastUpdate = rentalDoc.lastUpdate;
+        obj.initiatedDate = rentalDoc.initiatedDate;
+        console.log(obj);
+        recordsSummary.push(obj);
+      });
+  
+      let prettyResponse = giveMeAStory(recordsSummary);
+      console.log('myLentItems', prettyResponse);
+      res.status(200).json(prettyResponse);
+    }catch(e){
+      res.status(400).json(e);
+    }
+}
+
+async function borrowingItems(req,res){
+  try{
+    let records = await rentalSchema.find({_borrower:req.params._id})
+      .populate('_owner','userName')
+      .populate('_borrower', 'userName')
+      .populate('_item', 'item');
+      let recordsSummary = [];
+      records.forEach(rentalDoc => {
+        console.log('rentaldoc', rentalDoc._owner);
+        let obj = {};
+        obj._id = rentalDoc._id;
+        obj.owner = rentalDoc._owner.userName;
+        obj.owner_id = rentalDoc._owner._id;
+        obj.borrower = rentalDoc._borrower.userName;
+        obj.borrower_id = rentalDoc._borrower._id;
+        obj.item = rentalDoc._item.item;
+        obj.currentStatus = rentalDoc.currentStatus;
+        obj.archived = rentalDoc.archived;
+        obj.openRental = rentalDoc.openRental;
+        obj.lastUpdate = rentalDoc.lastUpdate;
+        obj.initiatedDate = rentalDoc.initiatedDate;
+        console.log(obj);
         recordsSummary.push(obj);
       });
   
@@ -55,17 +97,26 @@ async function getPrettyRecords(req,res){
     console.log('records', records);
 
     let recordsSummary = [];
+    console.log(records.length);
     records.forEach(rentalDoc => {
+      console.log('rentaldoc', rentalDoc._owner);
       let obj = {};
       obj._id = rentalDoc._id;
       obj.owner = rentalDoc._owner.userName;
+      obj.owner_id = rentalDoc._owner._id;
       obj.borrower = rentalDoc._borrower.userName;
+      obj.borrower_id = rentalDoc._borrower._id;
       obj.item = rentalDoc._item.item;
       obj.currentStatus = rentalDoc.currentStatus;
+      obj.archived = rentalDoc.archived;
+      obj.openRental = rentalDoc.openRental;
+      obj.lastUpdate = rentalDoc.lastUpdate;
+      obj.initiatedDate = rentalDoc.initiatedDate;
+      console.log(obj);
       recordsSummary.push(obj);
     });
 
-    let prettyResponse = giveMeAStory(recordsSummary);
+    let prettyResponse = await giveMeAStory(recordsSummary);
 
     res.status(200).json(prettyResponse);
   }catch(e){
@@ -131,7 +182,7 @@ async function deactivateRentalDoc(req,res){
   if(invalidCancelStates.includes(docCheck[0].currentStatus.toString().charAt(0))){
     res.status(406).json(docCheck);
   }else{
-    let docDeactivate = await rentalModel.update(req.params._id, {'archived':true,}, {new:true,});
+    let docDeactivate = await rentalModel.update(req.params._id, {'archived':true, 'openRental':false}, {new:true,});
     res.status(200).json(docDeactivate);
   }
 

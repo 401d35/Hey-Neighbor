@@ -10,9 +10,10 @@ module.exports = (req, res, next) => {
     next('invalid login details!');
   } else {
     // decode the headers and extract username and password
-    const basic = req.headers.authorization.split(' ')[1];
+    const basic = req.headers.authorization.split(' ')[1];	
     const [userName, password] = base64.decode(basic).split(':');
     // authenticate the credentials
+    console.log('user stuff', userName, password);
     users.authenticateBasic(userName, password)
       .then(validUser => {
         // generate token and send it to user

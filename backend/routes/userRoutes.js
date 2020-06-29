@@ -16,8 +16,10 @@ require('dotenv').config();
 
 userRoutes.get('/oauth', googleOAuth, (req, res) => {
   try {
+    res.set('Access-Control-Allow-Origin', '*')
     res.cookie('token', req.token);
-    res.status(200).redirect(process.env.LOGIN_REDIRECT);
+    res.status(200).send('Data Inbound');
+    // res.status(200).redirect(process.env.LOGIN_REDIRECT);
   } catch (e) {
     res.status(400).json(e);
   }

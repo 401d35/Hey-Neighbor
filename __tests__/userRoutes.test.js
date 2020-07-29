@@ -149,7 +149,7 @@ describe('client error tests', () => {
       })
       .catch(error => {
         // console.log(error);
-        expect(error).toEqual('This username has already been used, try other username');
+        expect(error).toEqual('This username has already been used, try another username');
       });
   });
 });

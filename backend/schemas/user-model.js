@@ -34,7 +34,7 @@ class User extends model {
     // check if the username is already used
     const findUser = await this.schema.find({ userName: record.userName, });
     if (findUser.length) {
-      return Promise.reject('This username has already been used, try other username!');
+      return Promise.reject('This username has already been used, try another username!');
     } else {
       // if username is not registered, save the record. Hash the password before save the record
       const password = await bcrypt.hash(record.password, 5);

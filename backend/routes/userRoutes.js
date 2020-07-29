@@ -82,7 +82,9 @@ function handleSignup(req, res) {
       res.status(201).send(token);
     })
     .catch(error => {
-      res.status(400).send(error);
+      console.log(error);
+      res.statusMessage = error;
+      res.status(400).end();
     });
 }
 
